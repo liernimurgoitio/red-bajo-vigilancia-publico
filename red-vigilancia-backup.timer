@@ -1,0 +1,11 @@
+[Unit]
+Description=Copia diaria de Red bajo vigilancia
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=15min
+Persistent=true
+Unit=red-vigilancia-backup.service
+
+[Install]
+WantedBy=timers.target

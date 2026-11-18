@@ -1,0 +1,24 @@
+dispositivos.local.json
+
+.venv/
+
+__pycache__/
+*.pyc
+# Historial privado de la red doméstica
+historial-red.local.sqlite3*
+
+# Modelo descargable para el recorte de fotos
+modelos/
+
+# Dirección privada de Tailscale de este equipo
+tailscale.local.json
+
+# Copias y credenciales de recuperación
+*.img
+*.img.partial
+*.tar.gz
+*.e2undo
+.config/
+.ssh/
+# Copia antigua del panel: el archivo servido está en la raíz
+/scripts/panel-ssh.html

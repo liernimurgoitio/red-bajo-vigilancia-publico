@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red bajo vigilancia · Red doméstica y laboratorio</title>
+<style>
+:root{color-scheme:dark;font-family:Segoe UI,Arial,sans-serif;background:#0b1220;color:#e8edf6}
+*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:40px 24px}header{border-bottom:1px solid #283449;padding-bottom:24px}h1{font-size:clamp(28px,5vw,42px);margin:10px 0}h2{font-size:20px;margin:0 0 20px}.eyebrow{color:#70dbc5;letter-spacing:2px;font-size:12px;font-weight:700}p{color:#b6c3d6;line-height:1.6}.upload,.panel,.card{background:#131e30;border:1px solid #2b3a50;border-radius:16px;padding:24px}.upload{margin-top:24px}input,select,button{font:inherit;color:inherit;background:#1b2c43;border:1px solid #536984;border-radius:8px;padding:10px}input{max-width:100%}input::file-selector-button{font:inherit;background:#70dbc5;color:#07251f;border:0;padding:9px 14px;border-radius:6px;margin-right:12px;cursor:pointer}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #70dbc5;outline-offset:3px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}.value{font-size:40px;font-weight:700;margin:12px 0}.green{color:#70dbc5}.amber{color:#ffc46b}.muted{color:#b6c3d6;font-size:14px}.panel{margin:20px 0}.toolbar{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:14px 10px;border-bottom:1px solid #2b3a50}th{color:#b6c3d6;font-size:13px}caption{text-align:left;padding:12px 0;color:#b6c3d6}.table-wrap{overflow:auto;max-height:450px}.badge{display:inline-block;padding:5px 9px;border-radius:6px;background:#203c3a}.badge.amber{background:#453723}#status{min-height:24px}#chart{width:100%;height:270px;display:block}.legend{display:flex;gap:24px;flex-wrap:wrap;font-size:14px;margin-top:10px}.error{color:#ffaaaa}footer{font-size:13px;color:#99acc6;line-height:1.6;margin-top:28px}@media(max-width:640px){body{padding:24px 14px}.cards{grid-template-columns:1fr}.card{padding:18px}.value{font-size:32px}}
+
+[hidden]{display:none!important}.navigation{display:flex;gap:12px;margin:24px 0;flex-wrap:wrap}.navigation button[aria-pressed="true"]{background:#70dbc5;color:#08251f;border-color:#70dbc5;font-weight:700}.device-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.device-summary .card{padding:20px}.device-summary .value{font-size:32px}.inventory-filters{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px}.inventory-filters label{display:grid;gap:8px;flex:1;min-width:200px}.inventory-filters input{width:100%}.network-note{border-left:3px solid #ffc46b;padding-left:16px}.device-table td:first-child{font-weight:600}.device-table{min-width:700px}h3{font-size:17px}#inventory-status{min-height:24px}@media(max-width:720px){.device-summary{grid-template-columns:repeat(2,1fr)}}
+
+/* Mantiene las cabeceras visibles dentro de las tablas desplazables. */
+.table-wrap table{border-collapse:separate;border-spacing:0}
+.table-wrap thead th{position:sticky;top:0;z-index:2;background:#131e30;box-shadow:0 1px 0 #2b3a50}
+
+dialog{color:#e8edf6;background:#131e30;border:1px solid #536984;border-radius:18px;padding:28px;width:min(680px,94vw);max-height:90vh;overflow:auto}dialog::backdrop{background:rgba(3,9,19,.8)}.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.edit-grid label{display:grid;gap:7px}.edit-grid input,.edit-grid select{width:100%}.edit-wide{grid-column:1/-1}.edit-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}.primary-button{background:#70dbc5;color:#08251f;font-weight:700}.edit-grid details{padding:14px;border:1px solid #34465f;border-radius:8px}summary{cursor:pointer}.save-note{min-height:24px}button:disabled{opacity:.5;cursor:wait}@media(max-width:540px){.edit-grid{grid-template-columns:1fr}dialog{padding:20px}}
+
+.device-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:18px;margin:20px 0}.device-tile{background:#131e30;border:1px solid #2b3a50;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}.device-tile-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.device-icon{width:48px;height:48px;padding:9px;border-radius:13px;color:#70dbc5;background:#203c3a;flex-shrink:0}.device-icon svg{width:100%;height:100%}.device-tile h3{margin:0;font-size:19px;overflow-wrap:anywhere}.device-tile p{margin:0}.device-ip{font-family:Consolas,monospace;font-size:17px;color:#e8edf6;overflow-wrap:anywhere}.device-tile .device-edit{margin-top:auto;align-self:flex-start}.tile-last{font-size:12px;color:#99acc6}.tile-state{font-size:12px;padding:5px 8px;border-radius:6px;max-width:140px}.tile-online{background:#203c3a;color:#70dbc5}.tile-offline{background:#453723;color:#ffc46b}.tile-pending{background:#26354b;color:#b6c3d6}@media(max-width:420px){.device-card-grid{grid-template-columns:1fr}}
+
+.lamp-state{display:inline-flex;align-items:center;gap:7px;font-size:13px;line-height:1.35}.lamp-state svg{width:20px;height:24px;flex-shrink:0}.state-green{color:#70dbc5}.state-red{color:#ff6d75}.state-yellow{color:#ffc46b}.state-gray{color:#a3b1c5}.lamp-legend{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0}.lamp-legend span{font-size:13px}
+.device-photo{width:100%;height:155px;object-fit:contain;background:#fff;border-radius:12px}.photo-preview{max-width:180px;max-height:140px;object-fit:contain}
+
+.edit-grid .photo-remove{display:flex;align-items:center;justify-content:flex-start;gap:9px;margin-top:12px;cursor:pointer}
+.edit-grid .photo-remove input{width:18px;height:18px;margin:0;flex:0 0 18px;accent-color:#70dbc5}
+.photo-preview{display:block;margin-top:12px;border-radius:10px}
+.photo-preview[hidden]{display:none}
+.device-tile-top.has-photo{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.device-picture{width:100%;height:170px;display:flex;align-items:center;justify-content:center;border-radius:12px;overflow:hidden;background:#fff}
+.device-picture .device-photo{display:block;width:100%;height:100%;object-fit:contain;border-radius:0}
+.device-tile-top.has-photo .tile-state{align-self:flex-start}
+
+/* Fotos con su proporción original, sin bandas añadidas por el panel. */
+.device-picture{height:auto;min-height:0;background:transparent;overflow:visible}
+.device-picture .device-photo{width:auto;max-width:100%;height:auto;max-height:170px;object-fit:contain;background:transparent;border-radius:8px}
+#device-form label.photo-remove{display:flex!important;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;width:100%;margin:12px 0 0;padding:0}
+#device-form #edit-photo-remove{display:block;width:17px!important;height:17px;margin:0!important;padding:0;flex:0 0 17px;align-self:center}
+#device-form label.photo-remove span{display:block;margin:0;line-height:22px}
+
+/* Tarjetas con los mismos espacios para imagen, estado y contenido. */
+.device-card-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;align-items:stretch}
+.device-tile{padding:20px;gap:12px;border-radius:18px;background:linear-gradient(155deg,#152238,#111c2e);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.device-tile .device-tile-top,.device-tile .device-tile-top.has-photo{display:flex;flex-direction:column;align-items:stretch;gap:14px}
+.device-tile .device-picture{box-sizing:border-box;width:100%;height:176px;min-height:176px;padding:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #2b3d55;border-radius:12px;background:#101a2a}
+.device-tile .device-picture .device-photo{display:block;width:148px;height:148px;max-width:100%;max-height:148px;object-fit:contain;background:transparent;border-radius:8px}
+.device-placeholder>svg,.device-picture>svg{width:62px;height:62px;color:#70dbc5;opacity:.85}
+.device-tile .tile-state{box-sizing:border-box;min-height:30px;max-width:none;align-self:flex-start;padding:5px 8px;border-radius:7px;background:#0e1929;font-size:12px}
+.device-tile h3{min-height:48px;line-height:24px;font-size:17px;font-weight:650;letter-spacing:.1px;overflow-wrap:anywhere}
+.device-tile .device-meta{min-height:42px;line-height:21px;font-size:13px;color:#a9bbd1}
+.device-tile .device-ip-label{font-size:11px;line-height:16px;margin-bottom:-8px;color:#8ea4bf}
+.device-tile .device-ip{min-height:24px;font-size:15px;line-height:24px;letter-spacing:.2px}
+.device-tile .tile-last{min-height:34px;line-height:17px;font-size:11px;color:#91a6c0}
+.device-tile .device-edit{width:100%;min-height:40px;margin-top:auto;border-radius:9px;border-color:#405873;background:#1a2b43;text-align:center;font-weight:600}
+.device-tile .device-edit:hover{background:#253e59;border-color:#70dbc5}
+@media(max-width:420px){.device-card-grid{grid-template-columns:1fr}}
+
+.device-tile .device-picture{border:0;background:transparent}
+.device-tile .device-tile-top,.device-tile .device-tile-top.has-photo{align-items:center}
+.device-tile .tile-state,.device-tile-top.has-photo .tile-state{align-self:center;justify-content:center;text-align:center;background:transparent}
+.device-tile h3{text-align:center;width:100%}
+.tv-power{display:block;font-size:12px;line-height:18px;color:#b7c8dc;margin-top:6px}.device-tile .tv-power{text-align:center;min-height:36px} .tv-power[hidden]{display:none}
+
+.device-lamps{display:flex;align-items:center;justify-content:flex-start;gap:10px;flex-wrap:wrap}
+.device-tile .device-lamps{justify-content:center;align-self:center;max-width:100%;min-height:34px}
+.device-lamps .lamp-state{font-size:12px;line-height:18px;padding:6px 8px;border:1px solid #33465d;border-radius:8px;background:#101b2b;white-space:nowrap}
+.device-lamps .tv-power-lamp{border-style:dashed}
+.device-tile .device-lamps.tile-state{padding:0;background:transparent}
+.tv-controls{display:flex;gap:8px;width:100%;margin-top:auto}.tv-controls button{flex:1;min-height:38px;padding:8px}.tv-control-note{font-size:11px;line-height:17px;color:#a9bbd1}.device-tile:has(.tv-controls) .device-edit{margin-top:4px}
+
+#device-cards{display:block;margin-top:22px}
+.device-status-group{--group-color:#70dbc5;margin:0 0 26px;padding:20px;border:1px solid #304159;border-top:3px solid var(--group-color);border-radius:16px;background:rgba(15,25,41,.5)}
+.device-status-group.group-yellow{--group-color:#ffc46b}
+.device-status-group.group-red{--group-color:#ff6d75}
+.device-status-group.group-gray{--group-color:#99acc6}
+.device-group-heading{display:flex;align-items:center;gap:10px;margin:0;font-size:19px;line-height:28px}
+.group-dot{color:var(--group-color);font-size:16px}
+.group-count{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:1px 8px;border:1px solid #40536c;border-radius:20px;color:var(--group-color);font-size:14px}
+.device-status-group .device-card-grid{margin:18px 0 0}
+.device-status-group .device-card-grid:empty{display:none}
+.group-empty{margin:12px 0 0;color:#99acc6;font-size:13px}
+@media(max-width:540px){.device-status-group{padding:12px}.device-group-heading{font-size:17px}}
+
+#device-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.device-status-group{min-width:0;margin:0;padding:14px;background:rgba(15,25,41,.35)}
+.device-status-group .device-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px;margin:16px 0 0}
+.device-group-heading{gap:8px;font-size:16px;line-height:22px;flex-wrap:wrap}
+.device-status-group .device-tile{padding:14px;gap:10px;border-radius:13px}
+.device-status-group .device-picture{height:136px;min-height:136px;padding:8px}
+.device-status-group .device-picture .device-photo{width:120px;height:120px;max-height:120px}
+.device-status-group .device-tile h3{font-size:15px;line-height:21px;min-height:42px}
+.device-status-group .device-meta{font-size:12px;line-height:18px;min-height:36px}
+.device-status-group .device-ip{font-size:13px}
+.device-status-group .device-lamps{gap:5px}
+.device-status-group .device-lamps .lamp-state{padding:5px;font-size:11px}
+@media(max-width:780px){#device-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){#device-cards{grid-template-columns:1fr}}
+
+/* El inventario aprovecha el monitor completo. */
+body:has(#cards-area:not([hidden])){max-width:none;width:100%;padding-left:28px;padding-right:28px}
+#cards-area{width:100%;min-width:0}
+@media(min-width:1200px){
+ #device-cards{grid-template-columns:minmax(0,2fr) minmax(220px,.85fr) minmax(0,1.5fr);gap:20px}
+ #device-cards:has(.group-yellow .device-card-grid:empty){grid-template-columns:minmax(0,2fr) minmax(190px,.5fr) minmax(0,1.5fr)}
+ .device-status-group .device-card-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+}
+@media(max-width:640px){body:has(#cards-area:not([hidden])){padding-left:14px;padding-right:14px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">RED BAJO VIGILANCIA / MI PROYECTO</div><h1>Mi red y mi laboratorio</h1><p>Un lugar para consultar los aparatos de casa y las pruebas de seguridad en Ubuntu.</p></header>
+<nav class="navigation" aria-label="Áreas del proyecto"><button id="nav-home" type="button" aria-pressed="true" aria-controls="home-area">Red doméstica</button><button id="nav-cards" type="button" aria-pressed="false" aria-controls="cards-area">Inventario visual</button><button id="nav-history" type="button" aria-pressed="false" aria-controls="history-area">Historial de red</button><button id="nav-ssh" type="button" aria-pressed="false" aria-controls="ssh-area">Laboratorio SSH</button></nav>
+<main id="home-area" aria-labelledby="home-title">
+<section class="panel"><div class="eyebrow">RED DOMÉSTICA / VISTA UNIFICADA</div><h2 id="home-title" style="margin-top:12px">Mis aparatos y su conexión</h2><p>El router informa del estado. El inventario del proyecto aporta los nombres, tipos y funciones que has documentado.</p><p id="live-summary" role="status" aria-live="polite">Conectando con el programa de vigilancia…</p><p class="muted">La vigilancia continúa mientras el servidor y el programa están encendidos. La última detección se conserva durante esta ejecución.</p></section>
+<div class="device-summary"><section class="card"><div>Equipos conocidos por el router</div><div id="unified-known" class="value">—</div><div class="muted">Incluye su historial</div></section><section class="card"><div>Conectados al router</div><div id="unified-active" class="value green">—</div><div class="muted">Según la última consulta</div></section><section class="card"><div>Desconectados del router</div><div id="unified-inactive" class="value amber">—</div><div class="muted">Según la última consulta</div></section><section class="card"><div>Equipos por identificar</div><div id="unified-unknown" class="value">—</div><div class="muted">Con alias genérico</div></section></div>
+<section class="panel"><h2>Todos los aparatos</h2><div class="inventory-filters"><label>Buscar aparato<input id="unified-search" type="search" placeholder="Nombre, IP, tipo o función"></label><label>Estado<select id="unified-state"><option value="all">Todos</option><option value="conectado">Conectados</option><option value="desconectado">Desconectados</option><option value="pendiente_asociar">Pendientes de asociar</option><option value="sin_comprobar">Estado sin informar</option></select></label><label>Identificación<select id="unified-identity"><option value="all">Todos</option><option value="known">Identificados</option><option value="unknown">Por identificar</option></select></label></div>
+<label><input id="show-ips" type="checkbox" checked> Mostrar direcciones IP</label><p class="muted">La IP se actualiza desde el router. En equipos desconectados puede corresponder a una conexión anterior. Puedes ocultar esta columna para las capturas.</p>
+<div class="lamp-legend" aria-label="Colores de las bombillas"><span class="state-green">● Verde: conectado</span><span class="state-red">● Rojo: desconectado</span><span class="state-yellow">● Amarillo: cambio por confirmar</span><span class="state-gray">● Gris: sin información actual</span></div><p class="muted">El amarillo aparece al detectar un cambio y se mantiene hasta confirmarlo en otra consulta del router. Los contadores reflejan la última respuesta del router.</p><p id="unified-count" class="muted" role="status" aria-live="polite"></p><div class="table-wrap"><table class="device-table"><thead><tr><th scope="col">Aparato</th><th id="ip-heading" scope="col">IP informada</th><th scope="col">Tipo y conexión</th><th scope="col">Estado observado</th><th scope="col">Función</th><th scope="col">Identificación</th><th scope="col">Última detección</th><th scope="col">Revisión anotada</th><th scope="col">Editar</th></tr></thead><tbody id="unified-rows"></tbody></table></div>
+<p id="inventory-status" class="muted" role="status" aria-live="polite"></p><p class="muted">El router principal se añade como equipo principal. Las anotaciones del inventario pendientes de asociar pueden corresponder a un equipo con alias genérico; su estado queda pendiente de confirmar.</p></section>
+<section class="panel"><h2>Gestionar mis aparatos</h2><p>Pulsa <strong>Editar</strong> en una fila para asignar un nombre genérico, tipo y función. Los cambios se guardan en la configuración privada del proyecto.</p><p>El programa genera automáticamente la tabla de <strong>inventario-red.md</strong> con los aparatos que has documentado. Las direcciones privadas permanecen en <strong>dispositivos.local.json</strong>.</p><p>Edita directamente los campos del aparato y pulsa Guardar cambios. Cuando haya anotaciones sin asociar, aparecerá la opción <strong>Unir con una anotación pendiente</strong>.</p><p id="save-global" class="save-note" role="status" aria-live="polite"></p></section>
+</main>
+<main id="cards-area" aria-labelledby="cards-title" hidden>
+<section class="panel"><div class="eyebrow">MIS APARATOS / VISTA CON ICONOS</div><h2 id="cards-title" style="margin-top:12px">Inventario visual</h2><p>Los mismos aparatos del panel, con su nombre e IP informada por el router. Los cambios que guardas se reflejan en ambas vistas.</p><div class="inventory-filters"><label>Buscar aparato<input id="cards-search" type="search" placeholder="Nombre, tipo o IP"></label><label>Mostrar<select id="cards-filter"><option value="known">Aparatos identificados</option><option value="all">Todos los aparatos</option><option value="unknown">Pendientes de identificar</option></select></label><label>Estado<select id="cards-state"><option value="all">Todos los estados</option><option value="conectado">Conectados</option><option value="desconectado">Desconectados</option><option value="pendiente_asociar">Pendientes de asociar</option></select></label></div><label><input id="cards-show-ips" type="checkbox" checked> Mostrar direcciones IP</label><p id="cards-count" class="muted" role="status" aria-live="polite"></p></section>
+<div class="lamp-legend" aria-label="Colores de las bombillas"><span class="state-green">● Verde: conectado</span><span class="state-red">● Rojo: desconectado</span><span class="state-yellow">● Amarillo: cambio por confirmar</span><span class="state-gray">● Gris: sin información actual</span></div><p class="muted">El amarillo aparece al detectar un cambio y se mantiene hasta confirmarlo en otra consulta del router. Los contadores reflejan la última respuesta del router.</p><div id="device-cards" class="device-card-grid"></div><p id="cards-empty" class="muted" role="status"></p>
+</main>
+<main id="history-area" aria-labelledby="history-title" hidden>
+<section class="panel"><div class="eyebrow">RED DOMÉSTICA / HISTORIAL LOCAL</div><h2 id="history-title">Cambios de conexión</h2><p>Conexiones y desconexiones observadas por el router mientras el programa está funcionando.</p><p class="muted">La fecha indica cuándo se ha observado el cambio, no el instante exacto en que ha ocurrido. Al iniciar el programa, la primera consulta establece el punto de partida y no genera cambios. No se reconstruyen los periodos con la vigilancia detenida. Una desconexión de red no confirma que un aparato esté apagado.</p><div class="inventory-filters"><label>Buscar aparato<input id="history-search" type="search" placeholder="Nombre del aparato"></label><label>Tipo de cambio<select id="history-type"><option value="all">Todos</option><option value="conectado">Conexiones</option><option value="desconectado">Desconexiones</option><option value="primera_deteccion">Primera detección en esta ejecución</option></select></label></div><p id="history-status" role="status" class="muted">Esperando el historial…</p><div class="table-wrap"><table><thead><tr><th>Fecha y hora observadas</th><th>Aparato</th><th>Cambio</th></tr></thead><tbody id="history-rows"></tbody></table></div><p class="muted">Se muestran hasta los 500 cambios más recientes. Los anteriores se conservan en el archivo privado historial-red.local.sqlite3 de tu proyecto.</p></section>
+</main>
+<main id="ssh-area" aria-label="Laboratorio SSH" hidden>
+
+<section class="upload" aria-labelledby="load-title"><h2 id="load-title">1. Carga tu archivo CSV</h2><label for="file">Selecciona <strong>eventos_ssh.csv</strong></label><p class="muted">El navegador recuerda el último CSV cargado y lo recupera al refrescar. Para incorporar eventos nuevos, carga una copia actualizada. Puedes borrar la copia recordada con el botón de abajo.</p><input id="file" type="file" accept=".csv,text/csv"><button id="forget" type="button">Borrar datos recordados</button><p id="status" role="status" aria-live="polite">Esperando un archivo. Los contadores se mostrarán al cargarlo.</p></section>
+<div class="cards">
+<section class="card"><div>Mensajes registrados</div><div id="total" class="value">—</div><div class="muted">Todos los eventos válidos del archivo</div></section>
+<section class="card"><div>Accesos aceptados</div><div id="accepted" class="value green">—</div><div class="muted">Mensajes de aceptación de clave</div></section>
+<section class="card"><div>Conexiones sin completar</div><div id="incomplete" class="value amber">—</div><div class="muted">Mensajes anteriores al acceso completo</div></section>
+</div>
+<section class="panel"><h2>Eventos por hora</h2><p id="chart-note" class="muted">Carga un archivo para ver la gráfica.</p><svg id="chart" viewBox="0 0 1000 270" role="img" aria-label="Gráfica de eventos SSH por hora"></svg><div class="legend"><span class="green">● Acceso aceptado</span><span class="amber">● Conexión sin completar</span></div></section>
+<section class="panel"><div class="toolbar"><h2>Últimos eventos</h2><label for="filter">Mostrar <select id="filter"><option value="todos">Todos</option><option value="acceso_aceptado">Accesos aceptados</option><option value="conexion_sin_completar">Conexiones sin completar</option></select></label></div><div class="table-wrap"><table><caption id="table-note">Todavía no hay datos cargados.</caption><thead><tr><th scope="col">Fecha observada</th><th scope="col">Tipo de evento</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel" aria-labelledby="arm-title">
+<h2 id="arm-title">Asociaciones entre eventos · ARM</h2>
+<p>Busca cuándo aparecen juntos los dos tipos de evento dentro del mismo minuto. Cada minuto con eventos cuenta una vez.</p>
+<div class="toolbar"><label>Desde <input id="arm-start" type="datetime-local" step="60"></label><label>Hasta, sin incluir <input id="arm-end" type="datetime-local" step="60"></label><button id="arm-all" type="button">Usar todo el CSV</button></div>
+<p class="muted">Fechas en el horario de este PC. Deja los campos vacíos para analizar todo el archivo. El intervalo solo modifica esta sección ARM.</p>
+<p id="arm-status" role="status" aria-live="polite">Carga un CSV para calcular las asociaciones.</p>
+<h3>Mensajes por minuto</h3>
+<p class="muted">Esta tabla cuenta todas las filas del CSV dentro del intervalo elegido. ARM cuenta la presencia de cada tipo una vez por minuto.</p>
+<p id="frequency-note" class="muted" role="status"></p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Minuto</th><th scope="col">Accesos aceptados</th><th scope="col">Conexiones sin completar</th><th scope="col">Total de mensajes</th></tr></thead><tbody id="frequency-rows"></tbody></table></div>
+<h3>Reglas de asociación</h3>
+
+<div class="table-wrap"><table><thead><tr><th scope="col">Asociación dentro del mismo minuto</th><th scope="col">Soporte</th><th scope="col">Confianza</th><th scope="col">Lift</th></tr></thead><tbody id="arm-rows"></tbody></table></div>
+<p class="muted"><strong>Soporte</strong> indica qué parte de los minutos incluye ambos eventos. <strong>Confianza</strong> indica qué parte de los minutos con el primer evento incluye también el segundo. <strong>Lift</strong> compara la coincidencia con lo esperado si fueran independientes. Un valor mayor que 1 indica más coincidencia de la esperada.</p>
+<p class="muted">Se cuentan solo minutos con eventos, sin periodos de silencio. La flecha no indica orden temporal ni causa. Los resultados describen nuestras pruebas y no identifican por sí solos un ataque.</p>
+</section>
+</main>
+<dialog id="device-editor" aria-labelledby="edit-title"><form id="device-form"><h2 id="edit-title">Editar aparato</h2><p id="edit-context" class="muted"></p><div class="edit-grid">
+<label id="edit-link-field" class="edit-wide">Unir con una anotación pendiente<select id="edit-link"><option value="">Mantener esta ficha o crear una nueva</option></select></label>
+<label class="edit-wide">Nombre para el panel<input id="edit-alias" maxlength="100" required placeholder="Por ejemplo, Tele del salón"></label>
+<label>Tipo<input id="edit-type" maxlength="100" list="device-types" placeholder="Por ejemplo, Televisor"></label>
+<label>Conexión anotada<input id="edit-connection" maxlength="100" list="connection-types"></label>
+<label class="edit-wide">Para qué sirve<input id="edit-purpose" maxlength="300" placeholder="Por ejemplo, Ver televisión"></label>
+<div class="edit-wide"><label>Foto del aparato<input id="edit-photo" type="file" accept="image/jpeg,image/png,image/webp"></label><label style="margin-top:12px">Usar la foto de otro aparato<select id="edit-photo-existing"><option value="">Conservar la foto actual</option></select></label><p id="photo-processing-note" class="muted">Este servidor guarda las fotos tal como las eliges. Puedes cargar un PNG con fondo transparente.</p><img id="edit-photo-preview" class="photo-preview" alt="Foto actual del aparato" hidden><label class="photo-remove"><input id="edit-photo-cutout" type="checkbox"> <span>Quitar también el fondo de la foto actual</span></label><label class="photo-remove"><input id="edit-photo-remove" type="checkbox"> <span>Quitar la foto guardada</span></label></div>
+<label>Fecha de revisión<input id="edit-review" type="date"></label>
+<details id="edit-details" class="edit-wide"><summary>Ver datos del router para reconocer el aparato</summary><p class="muted">Estos datos pueden identificar tus aparatos. Cierra este apartado antes de hacer capturas.</p><p id="edit-private" style="white-space:pre-wrap"></p></details>
+</div><p id="edit-message" class="save-note" role="status" aria-live="polite"></p><div class="edit-actions"><button type="button" id="edit-cancel">Cancelar</button><button type="submit" id="edit-save" class="primary-button">Guardar cambios</button></div></form></dialog>
+<datalist id="device-types"><option value="Router"><option value="Ordenador"><option value="Teléfono"><option value="Tablet"><option value="Televisor"><option value="Decodificador"><option value="Impresora"><option value="Consola"><option value="Dispositivo inteligente"></datalist>
+<datalist id="connection-types"><option value="Cable (LAN)"><option value="Wi-Fi de 2,4 GHz"><option value="Wi-Fi de 5 GHz"><option value="Wi-Fi (banda pendiente)"><option value="Router"></datalist>
+<footer>Una fila representa un mensaje reconocido, no necesariamente una conexión distinta. Una misma conexión puede generar varios mensajes. La fecha corresponde al momento en que el detector observó el mensaje. Una conexión sin completar puede deberse a una prueba o a una interrupción. El análisis ARM explora asociaciones entre los dos tipos de evento registrados.</footer>
+<script>
+'use strict';
+const labels = {acceso_aceptado:'Acceso aceptado', conexion_sin_completar:'Conexión sin completar'};
+let events = [];
+const dateFormat = new Intl.DateTimeFormat('es-ES',{dateStyle:'short',timeStyle:'medium'});
+const hourFormat = new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+function parseCsv(text) {
+    const rows = [];
+    let row = [], field = '', quoted = false;
+    text = text.replace(/^\uFEFF/,'');
+    for (let i = 0; i < text.length; i++) {
+        const character = text[i];
+        if (character === '"') {
+            if (quoted && text[i + 1] === '"') { field += '"'; i++; }
+            else { quoted = !quoted; }
+        } else if (character === ',' && !quoted) {
+            row.push(field); field = '';
+        } else if ((character === '\n' || character === '\r') && !quoted) {
+            if (character === '\r' && text[i + 1] === '\n') i++;
+            row.push(field); rows.push(row); row = []; field = '';
+        } else { field += character; }
+    }
+    if (quoted) throw new Error('Hay comillas sin cerrar en el CSV.');
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(values => values.some(value => value.trim() !== ''));
+}
+function readEvents(text) {
+    const rows = parseCsv(text);
+    const header = rows.shift();
+    if (!header || header.length !== 2 || header[0].trim() !== 'fecha_observada' || header[1].trim() !== 'tipo_evento') {
+        throw new Error('El archivo debe tener las columnas fecha_observada,tipo_evento.');
+    }
+    let skipped = 0;
+    const valid = [];
+    for (const row of rows) {
+        const type = (row[1] || '').trim();
+        const stamp = (row[0] || '').trim();
+        const date = new Date(stamp);
+        if (row.length !== 2 || !Object.hasOwn(labels,type) || !Number.isFinite(date.getTime()) || !/^\d{4}-\d{2}-\d{2}T/.test(stamp)) { skipped++; continue; }
+        valid.push({date,type});
+    }
+    valid.sort((first,second) => first.date - second.date);
+    return {valid, skipped};
+}
+function renderRows() {
+    const filter = document.querySelector('#filter').value;
+    const selected = events.filter(event => filter === 'todos' || event.type === filter);
+    const body = document.querySelector('#rows');
+    body.replaceChildren();
+    for (const event of selected.slice(-100).reverse()) {
+        const row = document.createElement('tr');
+        const dateCell = document.createElement('td');
+        dateCell.textContent = dateFormat.format(event.date);
+        const typeCell = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.className = event.type === 'acceso_aceptado' ? 'badge green' : 'badge amber';
+        badge.textContent = labels[event.type];
+        typeCell.append(badge); row.append(dateCell,typeCell); body.append(row);
+    }
+    document.querySelector('#table-note').textContent = `Mostrando ${Math.min(100,selected.length)} de ${selected.length} eventos del tipo seleccionado, del más reciente al más antiguo. Horario de este PC.`;
+}
+function svgElement(tag,attributes,text) {
+    const element = document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for (const [key,value] of Object.entries(attributes)) element.setAttribute(key,value);
+    if (text !== undefined) element.textContent = text;
+    return element;
+}
+function renderChart() {
+    const svg = document.querySelector('#chart'); svg.replaceChildren();
+    if (!events.length) { document.querySelector('#chart-note').textContent = 'El archivo no contiene eventos válidos.'; return; }
+    const hour = 3600000;
+    const last = Math.floor(events.at(-1).date.getTime() / hour) * hour;
+    const first = Math.max(Math.floor(events[0].date.getTime() / hour) * hour,last - 23 * hour);
+    const buckets = [];
+    for (let stamp = first; stamp <= last; stamp += hour) buckets.push({stamp,acceso_aceptado:0,conexion_sin_completar:0});
+    for (const event of events) {
+        const index = Math.floor((event.date.getTime() - first) / hour);
+        if (index >= 0 && index < buckets.length) buckets[index][event.type]++;
+    }
+    const maximum = Math.max(1,...buckets.map(bucket => bucket.acceso_aceptado + bucket.conexion_sin_completar));
+    const width = 920 / buckets.length;
+    for (let tick = 0; tick <= 4; tick++) {
+        const y = 220 - tick * 48;
+        svg.append(svgElement('line',{x1:55,y1:y,x2:980,y2:y,stroke:'#2b3a50'}));
+        svg.append(svgElement('text',{x:44,y:y + 4,'text-anchor':'end',fill:'#b6c3d6','font-size':12},String(Math.round(maximum * tick / 4))));
+    }
+    buckets.forEach((bucket,index) => {
+        let bottom = 220;
+        for (const [type,color] of [['acceso_aceptado','#70dbc5'],['conexion_sin_completar','#ffc46b']]) {
+            const height = bucket[type] / maximum * 192;
+            const rect = svgElement('rect',{x:60 + index * width,y:bottom - height,width:Math.max(2,width * 0.7),height,fill:color,rx:3});
+            rect.append(svgElement('title',{},`${hourFormat.format(new Date(bucket.stamp))} · ${labels[type]}: ${bucket[type]}`));
+            svg.append(rect); bottom -= height;
+        }
+        if (index % Math.max(1,Math.ceil(buckets.length / 5)) === 0 || index === buckets.length - 1) {
+            svg.append(svgElement('text',{x:60 + index * width,y:246,fill:'#b6c3d6','font-size':12},hourFormat.format(new Date(bucket.stamp))));
+        }
+    });
+    document.querySelector('#chart-note').textContent = 'Mensajes agrupados por hora. Se muestran hasta 24 horas, terminando en el último evento del archivo. Horario de este PC.';
+}
+
+
+function associationSummary(source, start, end) {
+    const minutes = new Map();
+    for (const event of source) {
+        const stamp = event.date.getTime();
+        if ((start !== null && stamp < start) || (end !== null && stamp >= end)) continue;
+        const minute = Math.floor(stamp / 60000);
+        if (!minutes.has(minute)) minutes.set(minute,new Set());
+        minutes.get(minute).add(event.type);
+    }
+    let accepted = 0, incomplete = 0, both = 0;
+    for (const types of minutes.values()) {
+        if (types.has('acceso_aceptado')) accepted++;
+        if (types.has('conexion_sin_completar')) incomplete++;
+        if (types.size === 2) both++;
+    }
+    const total = minutes.size;
+    const rules = [];
+    if (both > 0) {
+        for (const [from,to,countFrom,countTo] of [
+            ['acceso_aceptado','conexion_sin_completar',accepted,incomplete],
+            ['conexion_sin_completar','acceso_aceptado',incomplete,accepted]
+        ]) {
+            rules.push({from,to,support:both / total,confidence:both / countFrom,lift:(both / countFrom) / (countTo / total)});
+        }
+    }
+    return {total,accepted,incomplete,both,rules};
+}
+function minuteCounts(source, start, end) {
+    const minutes = new Map();
+    for (const event of source) {
+        const stamp = event.date.getTime();
+        if ((start !== null && stamp < start) || (end !== null && stamp >= end)) continue;
+        const minute = Math.floor(stamp / 60000) * 60000;
+        if (!minutes.has(minute)) minutes.set(minute,{minute,accepted:0,incomplete:0,total:0});
+        const bucket = minutes.get(minute);
+        if (event.type === 'acceso_aceptado') bucket.accepted++;
+        else bucket.incomplete++;
+        bucket.total++;
+    }
+    return [...minutes.values()].sort((first,second) => second.minute - first.minute);
+}
+function renderFrequency(start,end) {
+    const minutes = minuteCounts(events,start,end);
+    const body = document.querySelector('#frequency-rows');
+    body.replaceChildren();
+    const total = minutes.reduce((sum,bucket) => sum + bucket.total,0);
+    document.querySelector('#frequency-note').textContent = `${total} mensajes en ${minutes.length} ${minutes.length === 1 ? 'minuto con eventos' : 'minutos con eventos'}. Se muestran los ${Math.min(100,minutes.length)} minutos más recientes. Horario de este PC.`;
+    const format = new Intl.DateTimeFormat('es-ES',{dateStyle:'short',timeStyle:'short'});
+    for (const bucket of minutes.slice(0,100)) {
+        const row = document.createElement('tr');
+        for (const value of [format.format(new Date(bucket.minute)),bucket.accepted,bucket.incomplete,bucket.total]) {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.append(cell);
+        }
+        body.append(row);
+    }
+}
+function renderArm() {
+    const body = document.querySelector('#arm-rows');
+    const status = document.querySelector('#arm-status');
+    body.replaceChildren(); status.className = '';
+    document.querySelector('#frequency-rows').replaceChildren();
+    document.querySelector('#frequency-note').textContent = '';
+    const startText = document.querySelector('#arm-start').value;
+    const endText = document.querySelector('#arm-end').value;
+    const start = startText ? new Date(startText).getTime() : null;
+    const end = endText ? new Date(endText).getTime() : null;
+    if ((startText && !Number.isFinite(start)) || (endText && !Number.isFinite(end)) || (start !== null && end !== null && start >= end)) {
+        status.className = 'error'; status.textContent = 'La fecha inicial debe ser válida y anterior a la final.'; return;
+    }
+    renderFrequency(start,end);
+    const summary = associationSummary(events,start,end);
+    if (!summary.total) { status.textContent = 'No hay eventos en el intervalo elegido. Carga datos o ajusta las fechas.'; return; }
+    status.textContent = `${summary.total} ${summary.total === 1 ? 'minuto con eventos' : 'minutos con eventos'}: ${summary.accepted} con acceso aceptado, ${summary.incomplete} con conexión sin completar y ${summary.both} con ambos. Unos mismos minutos pueden pertenecer a varios grupos.`;
+    if (!summary.rules.length) { status.textContent += ' No hay reglas porque ningún minuto contiene ambos eventos.'; return; }
+    const percentage = new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1});
+    const decimal = new Intl.NumberFormat('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
+    for (const rule of summary.rules) {
+        const row = document.createElement('tr');
+        for (const value of [`${labels[rule.from]} → ${labels[rule.to]}`,percentage.format(rule.support),percentage.format(rule.confidence),decimal.format(rule.lift)]) {
+            const cell = document.createElement('td'); cell.textContent = value; row.append(cell);
+        }
+        body.append(row);
+    }
+}
+document.querySelector('#arm-start').addEventListener('change',renderArm);
+document.querySelector('#arm-end').addEventListener('change',renderArm);
+document.querySelector('#arm-all').addEventListener('click',() => {
+    document.querySelector('#arm-start').value = '';
+    document.querySelector('#arm-end').value = '';
+    renderArm();
+});
+function openStorage() {
+    return new Promise((resolve,reject) => {
+        const request = indexedDB.open('red-bajo-vigilancia-ssh',1);
+        request.onupgradeneeded = () => request.result.createObjectStore('archivos');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+        request.onblocked = () => reject(new Error('Almacenamiento ocupado por otra pestaña.'));
+    });
+}
+async function storedFile(action, value, key = 'ultimo-csv') {
+    const database = await openStorage();
+    try {
+        return await new Promise((resolve,reject) => {
+            const transaction = database.transaction('archivos',action === 'get' ? 'readonly' : 'readwrite');
+            const store = transaction.objectStore('archivos');
+            let request;
+            if (action === 'put') request = store.put(value,key);
+            else if (action === 'delete') request = store.delete(key);
+            else request = store.get(key);
+            transaction.oncomplete = () => resolve(request.result);
+            transaction.onerror = () => reject(transaction.error);
+            transaction.onabort = () => reject(transaction.error || new Error('Guardado interrumpido.'));
+        });
+    } finally { database.close(); }
+}
+function showFile(name, text, restored = false) {
+    const result = readEvents(text);
+    events = result.valid;
+    document.querySelector('#total').textContent = events.length;
+    document.querySelector('#accepted').textContent = events.filter(item => item.type === 'acceso_aceptado').length;
+    document.querySelector('#incomplete').textContent = events.filter(item => item.type === 'conexion_sin_completar').length;
+    renderRows(); renderChart(); renderArm();
+    const status = document.querySelector('#status');
+    status.className = '';
+    status.textContent = `${name}: ${events.length} mensajes ${restored ? 'recuperados' : 'cargados'}. ${result.skipped} filas omitidas por datos no válidos.`;
+}
+let pendingLoad = Promise.resolve();
+const ready = (async () => {
+    try {
+        const saved = await storedFile('get');
+        if (saved) showFile(saved.name,saved.text,true);
+    } catch (error) {
+        document.querySelector('#status').textContent = 'Este navegador no ha podido recuperar los datos guardados. Puedes seleccionar tu CSV.';
+    }
+})();
+document.querySelector('#filter').addEventListener('change',renderRows);
+document.querySelector('#file').addEventListener('change',event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    pendingLoad = pendingLoad.then(async () => {
+        await ready;
+        const status = document.querySelector('#status');
+        try {
+            if (file.size > 20 * 1024 * 1024) throw new Error('Selecciona un CSV de menos de 20 MB.');
+            const text = await file.text();
+            showFile(file.name,text);
+            try {
+                await storedFile('put',{name:file.name,text});
+                status.textContent += ' Copia guardada en este navegador.';
+            } catch (error) {
+                status.className = 'error';
+                status.textContent += ' No se pudo recordar esta carga. Tendrás que seleccionar el archivo al refrescar.';
+                try { await storedFile('delete'); } catch (cleanupError) { /* El navegador puede impedir también el borrado. */ }
+            }
+        } catch (error) {
+            status.className = 'error';
+            status.textContent = `${error.message} Se mantiene la última carga correcta.`;
+        }
+    });
+});
+document.querySelector('#forget').addEventListener('click',() => {
+    pendingLoad = pendingLoad.then(async () => {
+        await ready;
+        try {
+            await storedFile('delete');
+            events = [];
+            document.querySelector('#file').value = '';
+            for (const id of ['total','accepted','incomplete']) document.getElementById(id).textContent = '—';
+            renderRows(); renderChart(); renderArm();
+            document.querySelector('#status').className = '';
+            document.querySelector('#status').textContent = 'Copia recordada borrada. Puedes cargar otro CSV.';
+        } catch (error) {
+            document.querySelector('#status').textContent = 'No se pudo borrar la copia. Revisa los permisos de almacenamiento del navegador.';
+        }
+    });
+});
+
+
+let liveState = null;
+let liveAvailable = false;
+function normalized(value) {
+    return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function mergeDevices(state) {
+    const documented = new Map((state.inventario || []).map(item => [normalized(item.alias),item]));
+    const byId = new Map((state.inventario || []).map(item => [item.id,item]));
+    const matched = new Set();
+    const merged = (state.dispositivos || []).map(item => {
+        const key = normalized(item.alias);
+        const metadata = byId.get(item.documento_id) || documented.get(key);
+        if (metadata) matched.add(metadata.id || normalized(metadata.alias));
+        return {...item,tipo:metadata?.tipo || 'Pendiente',
+            conexion:metadata?.conexion && metadata.conexion !== '—' ? metadata.conexion : (item.conexion || 'Router'),
+            foto:metadata?.foto || '',funcion:metadata?.funcion || 'Pendiente de documentar',revision:metadata?.revision || '',
+            identificado: Boolean(item.identificado || metadata || item.es_router)};
+    });
+    for (const [key,item] of documented) {
+        if (matched.has(item.id || key)) continue;
+        merged.push({...item,id:'inventario-' + (item.id || key),documento_id:item.id,estado:item.pendiente ? 'pendiente_asociar' : 'sin_comprobar',ultima_deteccion:null,identificado:true});
+    }
+    const order = {conectado:0,pendiente_asociar:1,sin_comprobar:2,desconectado:3};
+    merged.sort((first,second) => (order[first.estado] ?? 2) - (order[second.estado] ?? 2) || first.alias.localeCompare(second.alias,'es'));
+    return merged;
+}
+function deviceStatus(item, stale) {
+    const labels = {conectado:'Conectado',desconectado:'Desconectado',pendiente_asociar:'Pendiente de asociar',sin_comprobar:'Sin informar'};
+    if (stale) return {tone:'gray',label:['conectado','desconectado'].includes(item.estado) ? 'Último estado: ' + labels[item.estado] : labels[item.estado] || 'Sin informar',title:'Falta una lectura actual del router.'};
+    if (item.transicion === 'conexion_por_confirmar') return {tone:'yellow',label:'Conexión por confirmar',title:'El router ha detectado la conexión. Esperando otra consulta para confirmarla.'};
+    if (item.transicion === 'desconexion_por_confirmar') return {tone:'yellow',label:'Desconexión por confirmar',title:'El router ha detectado la desconexión. Esperando otra consulta para confirmarla.'};
+    return {tone:item.estado === 'conectado' ? 'green' : item.estado === 'desconectado' ? 'red' : 'gray',label:labels[item.estado] || 'Sin informar',title:'Estado informado por el router.'};
+}
+function tvPowerLabel(item) {
+    return ({encendida:'Encendida · confirmado por la TV',en_espera:'En espera · informado por la TV',no_disponible:'Estado no disponible',consultando:'Consultando estado de la TV…',requiere_autorizacion:'Revisar vinculación de la TV'})[item.estado_tv] || '';
+}
+const tvPending = new Set();
+const tvMessages = new Map();
+async function requestTvPower(item, action, message) {
+    if (tvPending.has(item.id)) return;
+    tvPending.add(item.id);
+    tvMessages.set(item.id,'Enviando solicitud…');
+    renderDeviceCards();
+    try {
+        const response = await fetch('/api/tv',{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Token':liveState.edicion_token},body:JSON.stringify({id:item.id,accion:action}),signal:AbortSignal.timeout(12000)});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No se ha podido enviar la solicitud.');
+        tvMessages.set(item.id,data.mensaje);
+    } catch(error) {
+        tvMessages.set(item.id,error.name === 'TimeoutError' ? 'No se ha confirmado el envío. Comprueba la TV antes de repetirlo.' : error.message);
+    } finally {
+        tvPending.delete(item.id);renderDeviceCards();
+    }
+}
+function tvPowerLamp(item, stale) {
+    const confirmed = !stale && item.estado_tv === 'encendida';
+    const badge = document.createElement('span');
+    badge.className = 'lamp-state tv-power-lamp ' + (confirmed ? 'state-green' : 'state-gray');
+    badge.title = confirmed ? 'La televisión ha confirmado que está encendida.' : 'La televisión no ha confirmado su estado. No responder no demuestra que esté apagada.';
+    const bulb = svgElement('svg',{viewBox:'0 0 24 28','aria-hidden':'true'});
+    bulb.append(svgElement('path',{d:'M8 18c0-3-4-4-4-9a8 8 0 0 1 16 0c0 5-4 6-4 9z',fill:'currentColor',opacity:.9}));
+    bulb.append(svgElement('path',{d:'M8 21h8m-7 4h6',fill:'none',stroke:'currentColor','stroke-width':2,'stroke-linecap':'round'}));
+    const label = document.createElement('span'); label.textContent = confirmed ? 'TV encendida' : 'TV sin confirmar';
+    badge.append(bulb,label); return badge;
+}
+function deviceLamps(item, stale) {
+    const group = document.createElement('div'); group.className = 'device-lamps';
+    group.append(statusLamp(item,stale));
+    if (item.estado_tv) group.append(tvPowerLamp(item,stale));
+    return group;
+}
+function statusLamp(item, stale) {
+    const state = deviceStatus(item,stale);
+    const badge = document.createElement('span'); badge.className = 'lamp-state state-' + state.tone; badge.title = state.title;
+    const bulb = svgElement('svg',{viewBox:'0 0 24 28','aria-hidden':'true'});
+    bulb.append(svgElement('path',{d:'M8 18c0-3-4-4-4-9a8 8 0 0 1 16 0c0 5-4 6-4 9z',fill:'currentColor',opacity:.9}));
+    bulb.append(svgElement('path',{d:'M8 21h8m-7 4h6',fill:'none',stroke:'currentColor','stroke-width':2,'stroke-linecap':'round'}));
+    const label = document.createElement('span'); label.textContent = state.label;
+    badge.append(bulb,label); return badge;
+}
+let tableSignature = null;
+let cardsSignature = null;
+function viewSignature(items, extras) {
+    return JSON.stringify([items.map(({ultima_deteccion,...item}) => item), extras]);
+}
+function updateSeen(container, devices) {
+    for (const item of devices) {
+        const node = container.querySelector('[data-seen="' + item.id + '"]');
+        if (node) node.textContent = item.ultima_deteccion ? 'Última detección: ' + dateFormat.format(new Date(item.ultima_deteccion)) : 'Detección pendiente';
+    }
+}
+function renderUnified() {
+    const body = document.querySelector('#unified-rows');
+    const state = liveState || {};
+    const records = Array.isArray(state.equipos_router) ? state.equipos_router : [];
+    const available = state.fuente === 'router' && Boolean(state.ultima_comprobacion);
+    const unknown = records.filter(item => !item.identificado && !(state.inventario || []).some(row => normalized(row.alias) === normalized(item.alias))).length;
+    for (const [id,value] of [['known',records.length],['active',records.filter(item => item.estado === 'conectado').length],['inactive',records.filter(item => item.estado === 'desconectado').length],['unknown',unknown]]) {
+        document.querySelector('#unified-' + id).textContent = available ? value : '—';
+    }
+    const devices = mergeDevices(state);
+    const search = normalized(document.querySelector('#unified-search').value.trim());
+    const statusFilter = document.querySelector('#unified-state').value;
+    const identityFilter = document.querySelector('#unified-identity').value;
+    const selected = devices.filter(item => (statusFilter === 'all' || item.estado === statusFilter)
+        && (identityFilter === 'all' || item.identificado === (identityFilter === 'known'))
+        && normalized([item.alias,item.ip,item.tipo,item.funcion,item.conexion].join(' ')).includes(search));
+    const stale = !liveAvailable || state.error || (state.ultima_comprobacion && Date.now() - Date.parse(state.ultima_comprobacion) > (state.intervalo_segundos + 70) * 1000);
+    const showIps = document.querySelector('#show-ips').checked;
+    document.querySelector('#ip-heading').hidden = !showIps;
+    const labels = {conectado:'Conectado',desconectado:'Desconectado',pendiente_asociar:'Pendiente de asociar',sin_comprobar:'Sin informar'};
+    const signature = viewSignature(selected,[Boolean(stale),showIps,savingDevice,Boolean(state.edicion_token),Array.from(tvPending),Array.from(tvMessages)]);
+    if (signature !== tableSignature) {
+    tableSignature = signature;
+    body.replaceChildren();
+    for (const item of selected) {
+        const row = document.createElement('tr');
+        const review = /^\d{4}-\d{2}-\d{2}$/.test(item.revision || '') ? item.revision.split('-').reverse().join('/') : (item.revision || '—');
+        const status = (stale && ['conectado','desconectado'].includes(item.estado) ? 'Último estado: ' : '') + (labels[item.estado] || 'Sin informar');
+        for (const [index,value] of [item.alias,item.ip || '—',`${item.tipo} · ${item.conexion}`,status,item.funcion,item.identificado ? 'Identificado' : 'Por identificar',item.ultima_deteccion ? dateFormat.format(new Date(item.ultima_deteccion)) : '—',review].entries()) {
+            const cell = document.createElement('td'); cell.textContent = value;
+            if (index === 3) cell.replaceChildren(deviceLamps(item,stale));
+            if (index === 1) cell.hidden = !showIps;
+            if (index === 6) cell.dataset.seen = item.id;
+            row.append(cell);
+        }
+        const actionCell = document.createElement('td');
+        const editButton = document.createElement('button');
+        editButton.type = 'button'; editButton.textContent = 'Editar';
+        editButton.setAttribute('aria-label','Editar ' + item.alias);
+        editButton.disabled = !liveAvailable || !state.edicion_token || savingDevice;
+        editButton.addEventListener('click',() => openDeviceEditor(item));
+        actionCell.append(editButton); row.append(actionCell);
+        body.append(row);
+    }
+    }
+    for (const item of selected) {
+        const cell = body.querySelector('[data-seen="' + item.id + '"]');
+        if (cell) cell.textContent = item.ultima_deteccion ? dateFormat.format(new Date(item.ultima_deteccion)) : '—';
+    }
+    const pending = devices.filter(item => item.estado === 'pendiente_asociar').length;
+    document.querySelector('#unified-count').textContent = `${selected.length} de ${devices.length} registros de la vista. ${pending} anotaciones del inventario pendientes de asociar. Los contadores incluyen todos los equipos del router.`;
+    const note = document.querySelector('#inventory-status');
+    note.className = state.error_inventario ? 'error' : 'muted';
+    if (state.error_inventario) note.textContent = state.error_inventario + '. Se mantienen visibles los datos del router.';
+    else if (!state.edicion_token) note.textContent = 'Inicia la versión actualizada de vigilar_router.py para editar desde el panel.';
+    else note.textContent = state.error_exportacion || `${state.inventario.length} aparatos documentados. El documento inventario-red.md se genera automáticamente al guardar.`;
+    renderDeviceCards();
+}
+let historyData = null;
+let historyBusy = false;
+let historySignature = null;
+let lastHistoryFetch = 0;
+function renderHistory() {
+    const search = normalized(document.querySelector('#history-search').value);
+    const type = document.querySelector('#history-type').value;
+    const data = historyData || {eventos:[],total:0};
+    const selected = data.eventos.filter(item => normalized(item.alias).includes(search) && (type === 'all' || item.tipo === type));
+    const signature = JSON.stringify([selected,search,type,data.total,data.error]);
+    if (signature === historySignature) return;
+    historySignature = signature;
+    const body = document.querySelector('#history-rows'); body.replaceChildren();
+    const labels = {conectado:'Conectado',desconectado:'Desconectado',primera_deteccion:'Primera detección en esta ejecución'};
+    for (const item of selected) {
+        const row = document.createElement('tr');
+        for (const text of [dateFormat.format(new Date(item.fecha)),item.alias,labels[item.tipo] || item.tipo]) {
+            const cell = document.createElement('td'); cell.textContent = text; row.append(cell);
+        }
+        body.append(row);
+    }
+    document.querySelector('#history-status').textContent = data.error || (!historyData ? 'Abre el panel desde el programa de vigilancia para consultar el historial.' : data.total ? `${selected.length} cambios visibles de los ${data.eventos.length} más recientes. Total guardado: ${data.total}.` : 'Todavía no hay cambios guardados. La primera consulta es el punto de partida; los cambios posteriores aparecerán aquí.');
+}
+async function refreshHistory(force = false) {
+    if (historyBusy || (!force && Date.now() - lastHistoryFetch < 4000) || location.protocol !== 'http:') return;
+    historyBusy = true; lastHistoryFetch = Date.now();
+    try {
+        const response = await fetch('/api/historial',{cache:'no-store',signal:AbortSignal.timeout(4000)});
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.eventos)) throw new Error(data.error || 'No se ha podido cargar el historial.');
+        historyData = data; renderHistory();
+    } catch(error) {
+        document.querySelector('#history-status').textContent = 'No se ha podido actualizar el historial. Comprueba que el programa sigue abierto.';
+    } finally { historyBusy = false; }
+}
+for (const id of ['history-search','history-type']) document.querySelector('#' + id).addEventListener('input',renderHistory);
+function selectView(name, remember = true) {
+    if (!['home','cards','history','ssh'].includes(name)) return;
+    for (const section of ['home','cards','history','ssh']) {
+        document.querySelector('#' + section + '-area').hidden = section !== name;
+        document.querySelector('#nav-' + section).setAttribute('aria-pressed',String(section === name));
+    }
+    if (remember) history.replaceState(null,'','#' + name);
+    if (name === 'history') refreshHistory(true);
+}
+for (const name of ['home','cards','history','ssh']) document.querySelector('#nav-' + name).addEventListener('click',() => selectView(name));
+selectView((location.hash || '').slice(1),false);
+
+document.querySelector('#unified-search').addEventListener('input',renderUnified);
+document.querySelector('#show-ips').addEventListener('change',event => { document.querySelector('#cards-show-ips').checked = event.target.checked; renderUnified(); });
+for (const id of ['unified-state','unified-identity']) document.querySelector('#' + id).addEventListener('change',renderUnified);
+
+
+function deviceIcon(device) {
+    const text = normalized([device.tipo,device.alias].join(' '));
+    let kind = 'network';
+    if (device.es_router || text.includes('router')) kind = 'router';
+    else if (text.includes('impresora')) kind = 'printer';
+    else if (text.includes('tablet')) kind = 'tablet';
+    else if (text.includes('telefono') || text.includes('movil')) kind = 'phone';
+    else if (text.includes('televisor') || /\btele\b|tele_/.test(text)) kind = 'tv';
+    else if (text.includes('decodificador') || text.includes('deco')) kind = 'decoder';
+    else if (text.includes('consola') || text.includes('playstation')) kind = 'console';
+    else if (text.includes('ordenador') || text.includes('portatil') || /\bpc\b/.test(text)) kind = 'computer';
+    const paths = {
+        router:['M3 10h18v10H3z','M7 10V4m10 6V4M6 16h1m3 0h1m3 0h4'],
+        printer:['M6 9V3h12v6M6 17H3V9h18v8h-3','M6 14h12v7H6z','M17 12h1'],
+        tablet:['M5 2h14v20H5z','M10 19h4'],
+        phone:['M7 2h10v20H7z','M10 5h4m-3 14h2'],
+        tv:['M2 5h20v13H2z','M8 22h8m-4-4v4'],
+        decoder:['M2 7h20v11H2z','M6 12h1m4 0h7'],
+        console:['M7 7h10l4 4v7l-3 1-4-4h-4l-4 4-3-1v-7z','M7 10v4m-2-2h4m7-1h1m1 3h1'],
+        computer:['M2 3h20v14H2z','M8 22h8m-4-5v5'],
+        network:['M8 2h8v6H8z','M2 16h7v6H2zm13 0h7v6h-7z','M12 8v4H5v4m7-4h7v4']
+    };
+    const icon = svgElement('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'});
+    for (const path of paths[kind]) icon.append(svgElement('path',{d:path}));
+    return icon;
+}
+function renderDeviceCards() {
+    const state = liveState || {};
+    const devices = mergeDevices(state);
+    const search = normalized(document.querySelector('#cards-search').value.trim());
+    const identity = document.querySelector('#cards-filter').value;
+    const status = document.querySelector('#cards-state').value;
+    const showIps = document.querySelector('#show-ips').checked;
+    const selected = devices.filter(item => (identity === 'all' || item.identificado === (identity === 'known'))
+        && (status === 'all' || item.estado === status)
+        && normalized([item.alias,item.tipo,item.ip].join(' ')).includes(search));
+    const grid = document.querySelector('#device-cards');
+    const stale = !liveAvailable || state.error || (state.ultima_comprobacion && Date.now() - Date.parse(state.ultima_comprobacion) > (state.intervalo_segundos + 70) * 1000);
+    const labels = {conectado:'Conectado',desconectado:'Desconectado',pendiente_asociar:'Pendiente de asociar',sin_comprobar:'Sin informar'};
+    const signature = viewSignature(selected,[Boolean(stale),showIps,savingDevice,Boolean(state.edicion_token),Array.from(tvPending),Array.from(tvMessages)]);
+    if (signature === cardsSignature) { updateSeen(grid,selected); return; }
+    cardsSignature = signature;
+    const previousPhotos = new Map(Array.from(grid.querySelectorAll('img.device-photo')).map(img => [JSON.stringify([img.dataset.deviceId,img.getAttribute('src')]),img]));
+    grid.replaceChildren();
+    const groups = new Map();
+    for (const [tone,label] of [['green','Conectados'],['yellow','Cambios por confirmar'],['red','Desconectados'],['gray','Sin información actual']]) {
+        const count = selected.filter(item => deviceStatus(item,stale).tone === tone).length;
+        if (tone === 'gray' && !count) continue;
+        const section = document.createElement('section'); section.className = 'device-status-group group-' + tone;
+        const heading = document.createElement('h2'); heading.className = 'device-group-heading';
+        const dot = document.createElement('span'); dot.className = 'group-dot'; dot.textContent = '●';
+        const text = document.createElement('span'); text.textContent = label;
+        const number = document.createElement('span'); number.className = 'group-count'; number.textContent = count;
+        heading.append(dot,text,number); section.append(heading);
+        const cards = document.createElement('div'); cards.className = 'device-card-grid'; section.append(cards);
+        if (!count) {const empty = document.createElement('p');empty.className = 'group-empty';empty.textContent = 'Sin aparatos en este estado.';section.append(empty);}
+        groups.set(tone,cards); grid.append(section);
+    }
+    for (const item of selected) {
+        const card = document.createElement('article'); card.className = 'device-tile';
+        const top = document.createElement('div'); top.className = 'device-tile-top';
+        const picture = document.createElement('div'); picture.className = 'device-picture device-placeholder'; picture.append(deviceIcon(item));
+        if (/^fotos-aparatos\/[0-9a-f]{64}\.(?:jpg|png)$/.test(item.foto || '')) {
+            const photo = previousPhotos.get(JSON.stringify([item.id,'/' + item.foto])) || document.createElement('img'); photo.dataset.deviceId = item.id; if (!photo.getAttribute('src')) photo.src = '/' + item.foto; photo.alt = item.alias; photo.className = 'device-photo'; photo.loading = 'lazy';
+            photo.addEventListener('error',() => {photo.replaceWith(deviceIcon(item));},{once:true});
+            picture.className = 'device-picture'; picture.replaceChildren(photo);
+        }
+        const badge = deviceLamps(item,stale);
+        badge.className += ' tile-state';
+        if (item.foto) top.classList.add('has-photo');
+        top.append(picture,badge);
+        const title = document.createElement('h3'); title.textContent = item.alias;
+        const type = document.createElement('p'); type.className = 'muted device-meta'; type.textContent = `${item.tipo} · ${item.conexion}`;
+        const ip = document.createElement('p'); ip.className = 'device-ip'; ip.textContent = showIps ? (item.ip || 'Sin IP informada') : 'IP oculta';
+        const ipLabel = document.createElement('p'); ipLabel.className = 'muted device-ip-label'; ipLabel.textContent = 'IP informada por el router';
+        const last = document.createElement('p'); last.className = 'tile-last'; last.dataset.seen = item.id;
+        last.textContent = item.ultima_deteccion ? 'Última detección: ' + dateFormat.format(new Date(item.ultima_deteccion)) : 'Detección pendiente';
+        const edit = document.createElement('button'); edit.className = 'device-edit'; edit.type = 'button'; edit.textContent = 'Editar aparato';
+        edit.setAttribute('aria-label','Editar ' + item.alias);
+        edit.disabled = !liveAvailable || !state.edicion_token || savingDevice;
+        edit.addEventListener('click',() => openDeviceEditor(item));
+        card.append(top,title,type,ipLabel,ip,last);
+        if (item.control_tv) {
+            const controls = document.createElement('div'); controls.className = 'tv-controls';
+            for (const [action,label] of [['encender','Encender'],['apagar','Apagar']]) {
+                const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
+                button.disabled = !liveAvailable || !state.edicion_token || tvPending.has(item.id);
+                button.setAttribute('aria-label',label + ' ' + item.alias);
+                button.addEventListener('click',() => requestTvPower(item,action));controls.append(button);
+            }
+            const note = document.createElement('p'); note.className = 'tv-control-note';note.setAttribute('role','status');note.setAttribute('aria-live','polite');
+            note.textContent = tvMessages.get(item.id) || 'Encendido por red: pendiente de comprobar en esta TV.';
+            card.append(controls,note);
+        }
+        card.append(edit); groups.get(deviceStatus(item,stale).tone).append(card);
+    }
+    document.querySelector('#cards-count').textContent = `${selected.length} de ${devices.length} registros. La vista muestra inicialmente los aparatos identificados.`;
+    document.querySelector('#cards-empty').textContent = selected.length ? '' : liveState ? 'No hay aparatos que coincidan con estos filtros.' : 'Inicia la vigilancia y abre el panel local para cargar tus aparatos.';
+}
+document.querySelector('#cards-search').addEventListener('input',renderDeviceCards);
+for (const id of ['cards-filter','cards-state']) document.querySelector('#' + id).addEventListener('change',renderDeviceCards);
+document.querySelector('#cards-show-ips').addEventListener('change',event => {
+    document.querySelector('#show-ips').checked = event.target.checked;
+    renderUnified();
+});
+let editingDevice = null;
+let editingVersion = null;
+let editingToken = null;
+let savingDevice = false;
+let networkTimer = null;
+let networkRequest = 0;
+function fillEditor(device) {
+    const canCutout = Boolean(liveState?.recorte_fotos);
+    document.querySelector('#edit-photo-cutout').disabled = !canCutout;
+    document.querySelector('#photo-processing-note').textContent = canCutout
+        ? 'Al guardar una foto nueva, se quita el fondo automáticamente en este equipo. Puede tardar unos segundos.'
+        : 'Este servidor guarda las fotos tal como las eliges. Para quitar el fondo, prepara la imagen en el PC y carga el PNG transparente.';
+
+    const photos = document.querySelector('#edit-photo-existing'); photos.replaceChildren();
+    const keep = document.createElement('option'); keep.value = ''; keep.textContent = 'Conservar la foto actual'; photos.append(keep);
+    for (const item of liveState?.inventario || []) {
+        if (!/^fotos-aparatos\/[0-9a-f]{64}\.(?:jpg|png)$/.test(item.foto || '') || item.id === device.documento_id) continue;
+        const option = document.createElement('option'); option.value = item.foto; option.textContent = 'Foto de ' + item.alias; photos.append(option);
+    }
+    photos.value = '';
+    document.querySelector('#edit-photo').value = '';
+    document.querySelector('#edit-photo-remove').checked = false;
+    document.querySelector('#edit-photo-cutout').checked = false;
+    const preview = document.querySelector('#edit-photo-preview');
+    preview.hidden = !/^fotos-aparatos\/[0-9a-f]{64}\.(?:jpg|png)$/.test(device.foto || '');
+    if (!preview.hidden) preview.src = '/' + device.foto; else preview.removeAttribute('src');
+    document.querySelector('#edit-alias').value = device.alias || '';
+    document.querySelector('#edit-type').value = device.tipo === 'Pendiente' ? '' : (device.tipo || '');
+    const connection = device.conexion === 'WiFi' ? 'Wi-Fi (banda pendiente)' : device.conexion === 'Ethernet' ? 'Cable (LAN)' : device.conexion;
+    document.querySelector('#edit-connection').value = connection || '';
+    document.querySelector('#edit-purpose').value = ['Pendiente','Pendiente de documentar'].includes(device.funcion) ? '' : (device.funcion || '');
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.querySelector('#edit-review').value = /^\d{4}-\d{2}-\d{2}$/.test(device.revision || '') ? device.revision : today;
+}
+function openDeviceEditor(device) {
+    if (savingDevice) return;
+    editingDevice = device;
+    editingVersion = liveState.version_inventario;
+    editingToken = liveState.edicion_token;
+    const selector = document.querySelector('#edit-link');
+    selector.replaceChildren();
+    const empty = document.createElement('option');
+    empty.value = ''; empty.textContent = 'Seleccionar una anotación (opcional)'; selector.append(empty);
+    for (const item of liveState.inventario || []) {
+        if (!item.pendiente || item.id === device.documento_id) continue;
+        const option = document.createElement('option'); option.value = item.id; option.textContent = item.alias; selector.append(option);
+    }
+    const canLink = !device.id.startsWith('inventario-') && selector.options.length > 1;
+    selector.disabled = !canLink;
+    document.querySelector('#edit-link-field').hidden = !canLink;
+    fillEditor(device);
+    document.querySelector('#edit-context').textContent = device.id.startsWith('inventario-')
+        ? 'Esta ficha todavía está pendiente de relacionarse con un equipo del router. Puedes editar sus datos aquí.'
+        : device.identificado
+            ? 'Este aparato ya está identificado. Puedes cambiar su nombre, tipo y función en los campos de abajo.'
+            : 'Escribe un nombre para identificar este aparato. Puedes desplegar los datos del router para reconocerlo.';
+    document.querySelector('#edit-message').textContent = '';
+    document.querySelector('#edit-message').className = 'save-note';
+    document.querySelector('#edit-details').open = false;
+    document.querySelector('#edit-details').hidden = device.id.startsWith('inventario-') || device.es_router;
+    document.querySelector('#edit-private').textContent = '';
+    document.querySelector('#device-editor').showModal();
+    document.querySelector('#edit-alias').focus();
+}
+document.querySelector('#edit-link').addEventListener('change',event => {
+    const existing = (liveState.inventario || []).find(item => item.id === event.target.value);
+    fillEditor(existing || editingDevice);
+});
+document.querySelector('#edit-details').addEventListener('toggle',async event => {
+    if (!event.target.open || !editingDevice) return;
+    const identifier = editingDevice.id;
+    const output = document.querySelector('#edit-private');
+    output.textContent = 'Consultando datos de reconocimiento…';
+    try {
+        const response = await fetch('/api/detalle?id=' + encodeURIComponent(identifier),{headers:{'X-Panel-Token':editingToken},cache:'no-store',signal:AbortSignal.timeout(5000)});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No se ha podido consultar el aparato.');
+        if (editingDevice?.id !== identifier) return;
+        output.textContent = `Nombre en el router: ${data.nombre_router}\nIP actual: ${data.ip}\nMAC: ${data.mac}`;
+    } catch (error) { if (editingDevice?.id === identifier) output.textContent = error.message; }
+});
+document.querySelector('#edit-cancel').addEventListener('click',() => document.querySelector('#device-editor').close());
+document.querySelector('#device-editor').addEventListener('cancel',event => { if (savingDevice) event.preventDefault(); });
+document.querySelector('#device-editor').addEventListener('close',() => {
+    editingDevice = null;
+    document.querySelector('#edit-private').textContent = '';
+    document.querySelector('#edit-details').open = false;
+});
+document.querySelector('#edit-photo-existing').addEventListener('change',event => {
+    const preview = document.querySelector('#edit-photo-preview');
+    const photo = event.target.value || editingDevice?.foto || '';
+    preview.hidden = !photo;
+    if (photo) preview.src = '/' + photo;
+    if (event.target.value) {
+        document.querySelector('#edit-photo').value = '';
+        document.querySelector('#edit-photo-remove').checked = false;
+    document.querySelector('#edit-photo-cutout').checked = false;
+    }
+});
+async function preparePhoto(file) {
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 15 * 1024 * 1024) throw new Error('Usa una foto JPG, PNG o WebP de hasta 15 MB.');
+    const url = URL.createObjectURL(file);
+    try {
+        const image = new Image(); image.src = url; await image.decode();
+        const scale = Math.min(1,800 / Math.max(image.naturalWidth,image.naturalHeight));
+        const canvas = document.createElement('canvas'); canvas.width = Math.max(1,Math.round(image.naturalWidth*scale)); canvas.height = Math.max(1,Math.round(image.naturalHeight*scale));
+        const ctx = canvas.getContext('2d'); ctx.drawImage(image,0,0,canvas.width,canvas.height);
+        return canvas.toDataURL('image/png');
+    } finally { URL.revokeObjectURL(url); }
+}
+document.querySelector('#device-form').addEventListener('submit',async event => {
+    event.preventDefault();
+    if (!editingDevice || savingDevice) return;
+    const payload = {id:editingDevice.id,version:editingVersion,
+        vincular_id:document.querySelector('#edit-link').value,
+        alias:document.querySelector('#edit-alias').value,
+        tipo:document.querySelector('#edit-type').value,
+        conexion:document.querySelector('#edit-connection').value,
+        funcion:document.querySelector('#edit-purpose').value,
+        revision:document.querySelector('#edit-review').value};
+    const token = editingToken;
+    savingDevice = true;
+    document.querySelector('#edit-save').disabled = true;
+    document.querySelector('#edit-cancel').disabled = true;
+    const message = document.querySelector('#edit-message');
+    message.className = 'save-note'; message.textContent = liveState?.recorte_fotos ? 'Guardando… Si has añadido una foto, se está quitando el fondo.' : 'Guardando el aparato y la foto…';
+    try {
+        payload.quitar_fondo_nueva = Boolean(liveState?.recorte_fotos);
+        payload.quitar_fondo_actual = Boolean(liveState?.recorte_fotos) && document.querySelector('#edit-photo-cutout').checked;
+        const existingPhoto = document.querySelector('#edit-photo-existing').value;
+        if (existingPhoto) payload.foto_existente = existingPhoto;
+        if (document.querySelector('#edit-photo-remove').checked) payload.foto_data = '';
+        const file = document.querySelector('#edit-photo').files[0];
+        if (file && !document.querySelector('#edit-photo-remove').checked) payload.foto_data = await preparePhoto(file);
+        const response = await fetch('/api/aparato',{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Token':token},body:JSON.stringify(payload),signal:AbortSignal.timeout(120000)});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No se ha podido guardar.');
+        document.querySelector('#save-global').textContent = data.advertencia || 'Cambios guardados. inventario-red.md se ha actualizado automáticamente.';
+        document.querySelector('#save-global').className = data.advertencia ? 'error save-note' : 'save-note green';
+        document.querySelector('#device-editor').close();
+        await refreshNetwork();
+    } catch (error) {
+        message.className = 'error save-note';
+        message.textContent = error.name === 'TimeoutError' ? 'La respuesta ha tardado demasiado. Cierra y vuelve a abrir la ficha para comprobar si el cambio se ha guardado.' : error.message;
+    } finally {
+        savingDevice = false;
+        document.querySelector('#edit-save').disabled = false;
+        document.querySelector('#edit-cancel').disabled = false;
+        renderUnified();
+    }
+});
+async function refreshNetwork() {
+    clearTimeout(networkTimer);
+    const request = ++networkRequest;
+    const summary = document.querySelector('#live-summary');
+    if (location.protocol !== 'http:' || location.port !== '8765') {
+        summary.textContent = 'Para activar el seguimiento y la edición, ejecuta .venv\\Scripts\\python.exe scripts/vigilar_router.py en Windows y abre http://127.0.0.1:8765.';
+        liveAvailable = false; renderUnified(); return;
+    }
+    try {
+        const response = await fetch('/api/estado',{cache:'no-store',signal:AbortSignal.timeout(4000)});
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.dispositivos) || !Number.isFinite(data.intervalo_segundos)) throw new Error('Estado no válido.');
+        if (request !== networkRequest) return;
+        liveState = data; liveAvailable = true;
+        const date = data.ultima_comprobacion ? dateFormat.format(new Date(data.ultima_comprobacion)) : 'pendiente';
+        const stale = data.ultima_comprobacion && Date.now() - Date.parse(data.ultima_comprobacion) > (data.intervalo_segundos + 70) * 1000;
+        if (data.error) summary.textContent = 'La última comprobación ha fallado. ' + data.error + ' Última comprobación correcta: ' + date;
+        else if (stale) summary.textContent = 'Los datos han dejado de actualizarse. Última comprobación correcta: ' + date;
+        else summary.textContent = `Vigilancia activa desde el router. Última comprobación: ${date}. Consulta al router cada ${data.intervalo_segundos} s aproximadamente.`;
+    } catch (error) {
+        if (request !== networkRequest) return;
+        liveAvailable = false;
+        summary.textContent = 'Sin conexión con el programa de vigilancia. Comprueba que la terminal sigue abierta.';
+    }
+    if (request === networkRequest) {
+        renderUnified();
+        if (!document.querySelector('#history-area').hidden) refreshHistory();
+        networkTimer = setTimeout(refreshNetwork,1000);
+    }
+}
+renderUnified();
+refreshNetwork();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[Unit]
+Description=Copia privada de Red bajo vigilancia
+
+[Service]
+Type=oneshot
+User=admin-lab
+Group=admin-lab
+WorkingDirectory=/home/admin-lab/red-bajo-vigilancia
+ExecStart=/usr/bin/python3 /home/admin-lab/red-bajo-vigilancia/scripts/copias_seguridad.py --destino /var/lib/red-vigilancia-copias --conservar 7
+StateDirectory=red-vigilancia-copias
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+TimeoutStartSec=300

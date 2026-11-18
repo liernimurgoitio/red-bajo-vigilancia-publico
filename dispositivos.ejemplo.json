@@ -1,0 +1,13 @@
+{
+  "intervalo_segundos": 1,
+  "dispositivos": [
+    {
+      "alias": "Router principal",
+      "detectar": "router",
+      "tipo": "Router",
+      "conexion": "Router",
+      "funcion": "Dar acceso a la red doméstica",
+      "revision": "Pendiente"
+    }
+  ]
+}

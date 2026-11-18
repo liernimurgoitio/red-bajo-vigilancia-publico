@@ -1,0 +1,28 @@
+[Unit]
+Description=Red bajo vigilancia - panel domestico
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=admin-lab
+Group=admin-lab
+WorkingDirectory=/home/admin-lab/red-bajo-vigilancia
+ExecStart=/home/admin-lab/red-bajo-vigilancia/.venv/bin/python -u /home/admin-lab/red-bajo-vigilancia/scripts/vigilar_router.py --red-local --servicio
+LoadCredential=router-user:/home/admin-lab/.config/red-vigilancia/router-user
+LoadCredential=router-password:/home/admin-lab/.config/red-vigilancia/router-password
+LoadCredential=panel-password:/home/admin-lab/.config/red-vigilancia/panel-password
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=65
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/admin-lab/red-bajo-vigilancia
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
