@@ -2,6 +2,10 @@
 
 Esta demo reproduce las funciones principales del panel sin consultar el router, acceder a una cuenta ni controlar aparatos reales. Los nombres, direcciones, estados y eventos son ejemplos.
 
+[Abrir la demo pública](https://red-bajo-vigilancia-demo.splendidjaguar2.chatgpt.site)
+
+He confirmado que la página y sus módulos se pueden abrir sin iniciar sesión. El cambio de acceso a público ha sido autorizado expresamente. La revisión visual automática del navegador sigue sin completarse por una limitación de la herramienta.
+
 ## Abrir localmente
 
 Desde la raíz del repositorio:
