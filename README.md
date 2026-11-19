@@ -35,7 +35,7 @@ El servidor escucha en las direcciones concretas de la red doméstica y de Tails
 
 ## Demo con datos ficticios
 
-[**Abrir la demo pública**](https://red-bajo-vigilancia-demo.splendidjaguar2.chatgpt.site)
+[**Abrir la demo pública**](https://liernimurgoitio.net/demo/)
 
 He preparado una [demo interactiva](demo/README.md) para explorar el inventario, el historial y los ejemplos SSH sin conectarse a una red real. Incluye simulaciones de cambios y recuperación de consultas. Las instrucciones permiten abrirla localmente.
 

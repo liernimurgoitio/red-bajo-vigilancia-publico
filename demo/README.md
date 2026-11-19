@@ -2,9 +2,9 @@
 
 Esta demo reproduce las funciones principales del panel sin consultar el router, acceder a una cuenta ni controlar aparatos reales. Los nombres, direcciones, estados y eventos son ejemplos.
 
-[Abrir la demo pública](https://red-bajo-vigilancia-demo.splendidjaguar2.chatgpt.site)
+[Abrir la demo pública](https://liernimurgoitio.net/demo/)
 
-He confirmado que la página y sus módulos se pueden abrir sin iniciar sesión. El cambio de acceso a público ha sido autorizado expresamente. La revisión visual automática del navegador sigue sin completarse por una limitación de la herramienta.
+El 19 de noviembre de 2026 he publicado la demo en la ruta /demo/ del dominio del portafolio. He confirmado que la página se puede abrir sin iniciar sesión y que el botón del portafolio apunta a esa ruta. Los archivos están incluidos en public/demo dentro del código del portafolio. El cambio de acceso a público ha sido autorizado expresamente. La revisión visual automática del navegador sigue sin completarse por una limitación de la herramienta.
 
 ## Abrir localmente
 
