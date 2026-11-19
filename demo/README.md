@@ -48,3 +48,7 @@ La demo no comprueba la compatibilidad con routers o televisores, los permisos d
 Cada ficha permite abrir **Crear incidencia** con el aparato seleccionado. La sección de soporte incluye altas, notas, resolución y reapertura con datos ficticios. Los cambios se mantienen en memoria y se pierden al recargar; la página de soporte recibe solo el nombre, el identificador y el estado de ejemplo mediante la URL.
 
 El código se mantiene en [Laguntza IT](https://github.com/liernimurgoitio/laguntza-it). Para reproducir la entrega: compila `client` con `npm ci` y `npm run build`, copia su `dist` a `demo/soporte` y añade `<meta name="laguntza-mode" content="demo-integrada" />` en la cabecera de su `index.html`. Esa marca fija el modo ficticio también cuando la demo se aloja en otra carpeta. El archivo `laguntza-build.json` registra el origen y las sumas de los archivos entregados. No copies fuentes, dependencias ni bases de datos al alojamiento público.
+
+## Prueba de intercambio con Zaintza SOC
+
+La entrega de soporte incluye **Importar prueba de Zaintza** y **Descargar ejemplo ficticio**. El archivo se revisa antes de preparar el formulario. La importación repetida abre la incidencia ya existente sin modificar sus notas ni resolución. Los cambios siguen siendo temporales y se pierden al recargar. La demo no admite archivos marcados como reales ni consulta la API doméstica. La publicación de esta nueva entrega en Hostinger se realiza por separado.

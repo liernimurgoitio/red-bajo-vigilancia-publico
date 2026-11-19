@@ -102,9 +102,11 @@ def verificar_copia(ruta, destino=None):
                     with closing(sqlite3.connect(base.as_uri() + '?mode=ro&immutable=1', uri=True)) as db:
                         if db.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
                             raise ValueError('Las incidencias no superan la comprobación de integridad.')
-                        if db.execute('PRAGMA user_version').fetchone()[0] != 1:
+                        if db.execute('PRAGMA user_version').fetchone()[0] not in (1, 2):
                             raise ValueError('La versión de incidencias no es compatible.')
                         db.execute('SELECT id,request_id,payload_hash,title,description,category,priority,status,device_id,device_name,context_json,resolution,created_at,updated_at,version,search_text FROM incidencias LIMIT 0')
+                        if db.execute('PRAGMA user_version').fetchone()[0] == 2:
+                            db.execute('SELECT source_key FROM incidencias LIMIT 0')
                         numero_incidencias = db.execute('SELECT COUNT(*) FROM incidencias').fetchone()[0]
                         db.execute('SELECT COUNT(*) FROM actividad_incidencias').fetchone()
                         if db.execute('PRAGMA foreign_key_check').fetchone() is not None:

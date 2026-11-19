@@ -6,6 +6,7 @@ import json
 import re
 import sqlite3
 import unicodedata
+from intercambio_zaintza import validar_intercambio
 
 ESTADOS = ('new', 'in_progress', 'waiting', 'resolved')
 PRIORIDADES = ('low', 'medium', 'high')
@@ -48,7 +49,7 @@ class Incidencias:
         self.ruta = ruta
         with self.conexion() as db:
             version = db.execute('PRAGMA user_version').fetchone()[0]
-            if version not in (0, 1):
+            if version not in (0, 1, 2):
                 raise ValueError('La versión de la base de incidencias no es compatible.')
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS incidencias (
@@ -67,8 +68,13 @@ class Incidencias:
                   actor TEXT NOT NULL);
                 CREATE INDEX IF NOT EXISTS idx_incidencias_estado ON incidencias(status, updated_at);
                 CREATE INDEX IF NOT EXISTS idx_actividad_incidencia ON actividad_incidencias(incidencia_id, id);
-                PRAGMA user_version=1;
             ''')
+            db.execute('BEGIN IMMEDIATE')
+            columnas = {fila[1] for fila in db.execute('PRAGMA table_info(incidencias)')}
+            if 'source_key' not in columnas:
+                db.execute('ALTER TABLE incidencias ADD COLUMN source_key TEXT')
+            db.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_incidencia_origen ON incidencias(source_key)')
+            db.execute('PRAGMA user_version=2')
         self.ruta.chmod(0o600)
 
     @contextmanager
@@ -127,7 +133,17 @@ class Incidencias:
         return {'tickets': [self.publico(fila) for fila in filas], 'total': total,
                 'page': pagina, 'pageSize': 25, 'summary': dict(metricas)}
 
-    def crear(self, datos, equipo=None, actor='panel'):
+    def importar_zaintza(self, datos):
+        if not isinstance(datos, dict) or datos.get('confirmDemo') is not True:
+            raise ValueError('Confirma que has revisado una prueba ficticia de Zaintza.')
+        origen = validar_intercambio(datos.get('source'))
+        if datos.get('deviceId'):
+            raise ValueError('Esta prueba no se asocia automáticamente con un aparato.')
+        if datos.get('category') != 'Acceso y cuentas':
+            raise ValueError('La prueba de Zaintza utiliza la categoría Acceso y cuentas.')
+        return self.crear(datos, origen=origen)
+
+    def crear(self, datos, equipo=None, actor='panel', origen=None):
         if not isinstance(datos, dict):
             raise ValueError('Formulario no válido.')
         titulo = texto(datos.get('title'), 'título', 5, 120)
@@ -144,11 +160,25 @@ class Incidencias:
         # La asociación y la evidencia proceden del servidor; el cliente no impone su nombre.
         nombre = equipo.get('name') if equipo_id else None
         contexto = {key: equipo.get(key) for key in ('state', 'observedAt')} if equipo_id else {}
-        canonico = json.dumps([titulo, descripcion, categoria, prioridad, equipo_id], ensure_ascii=False)
+        clave_origen = None
+        if origen is not None:
+            contexto['source'] = origen
+            referencia = [origen['environment'], origen['sourceInstanceId'], origen['detection']['id']]
+            clave_origen = hashlib.sha256(json.dumps(referencia).encode()).hexdigest()
+        contenido_huella = [titulo, descripcion, categoria, prioridad, equipo_id]
+        if origen is not None:
+            contenido_huella.append(origen)
+        canonico = json.dumps(contenido_huella, ensure_ascii=False)
         huella = hashlib.sha256(canonico.encode()).hexdigest()
         ahora = fecha()
         with self.conexion() as db:
             db.execute('BEGIN IMMEDIATE')
+            if clave_origen:
+                previa = db.execute('SELECT * FROM incidencias WHERE source_key=?', (clave_origen,)).fetchone()
+                if previa:
+                    if json.loads(previa['context_json']).get('source') != origen:
+                        raise ConflictoIncidencia('La referencia de Zaintza ya existe con otras evidencias. Revisa el archivo; no se ha modificado la incidencia.')
+                    return {**self.detalle(f"INC-{previa['id']:06d}", db), 'importReused': True}
             anterior = db.execute('SELECT * FROM incidencias WHERE request_id=?', (peticion,)).fetchone()
             if anterior:
                 if anterior['payload_hash'] != huella:
@@ -161,10 +191,14 @@ class Incidencias:
                  json.dumps(contexto, ensure_ascii=False), ahora, ahora,
                  normalizar(' '.join((titulo, descripcion, categoria, nombre or '')))))
             identificador = f'INC-{cursor.lastrowid:06d}'
-            db.execute('UPDATE incidencias SET search_text=search_text || ? WHERE id=?',
-                       (' ' + identificador.lower(), cursor.lastrowid))
+            db.execute('UPDATE incidencias SET search_text=search_text || ?,source_key=? WHERE id=?',
+                       (' ' + identificador.lower(), clave_origen, cursor.lastrowid))
             db.execute('INSERT INTO actividad_incidencias(incidencia_id,fecha,tipo,detalle,actor) VALUES (?,?,?,?,?)',
                        (cursor.lastrowid, ahora, 'created', 'Incidencia creada manualmente.', actor))
+            if origen is not None:
+                db.execute('INSERT INTO actividad_incidencias(incidencia_id,fecha,tipo,detalle,actor) VALUES (?,?,?,?,?)',
+                           (cursor.lastrowid, ahora, 'source', 'Importación manual de prueba ficticia: ' + origen['detection']['id'], actor))
+                return {**self.detalle(identificador, db), 'importReused': False}
             return self.detalle(identificador, db)
 
     def actualizar(self, identificador, datos, actor='panel'):

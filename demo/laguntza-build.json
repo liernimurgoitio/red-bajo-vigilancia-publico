@@ -1,12 +1,15 @@
 {
   "source": "https://github.com/liernimurgoitio/laguntza-it",
-  "commit": "ef280a8",
+  "commit": "8270a00b5dff579423ea966ae6e9fc62a9aaa942",
   "build": "npm ci && npm run build (client)",
   "mode": "demo-integrada: meta en index.html, sin API privada",
   "sha256": {
-    "favicon.svg": "f9328a85dde3db634c3cab12fb433f99af67541e024f6ba0bee9eed8e2373571",
-    "index.html": "d4b865b45d8305e937c6b262208069ddcdd78ca7f434bbc6b21d8a369f52967f",
+    "favicon.svg": "60a9a3772d19af2e03422e94ad430f0a83bc1f1762fd4ae3f511957cab34b41d",
+    "index.html": "8bc8ec7f78f0fba9ef385180fe9f02a1743c9f427cd6a2be0921bb3bc1a296da",
+    "assets/index-BliZocG7.css": "98947f0d937f676ea9e0332cf6764a349b035b303f25364698a1aec522e52c8a",
+    "assets/index-CPsA9nhp.js": "3f071a0abf4d1c63d043ed94da0dbe5b48413650b866a53ebd14c55f858ae8ce",
     "assets/index-CVAcPchP.js": "fc29e703bd83dc81e6e8f7996a5e7b54b6e54b2903b9234b7a539b757163a09c",
     "assets/index-eoV8QNUp.css": "9cc53a7f6b88d8206014cfbee17834fec73b296c4a0f4488865a1adc00dc3931"
-  }
+  },
+  "zaintzaCommit": "b8fa56ac5e9b398a7b85d8d608f47440e2484047"
 }

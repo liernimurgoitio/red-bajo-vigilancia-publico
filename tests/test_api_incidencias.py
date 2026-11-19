@@ -100,7 +100,19 @@ class ApiIncidencias(unittest.TestCase):
                 self.assertEqual(consultar(ruta, 'POST', {'version': 1, 'note': 'Versión antigua.'}, token=token)[0], 409)
                 self.assertEqual(consultar('/api/incidencias?page=0')[0], 400)
                 self.assertEqual(consultar('/api/incidencias/INC-999999')[0], 404)
+                source = json.loads((Path(__file__).parent / 'fixtures/zaintza-demo-v1.json').read_text())
+                prueba = {**datos, 'requestId': 'b' * 32, 'deviceId': '', 'category': 'Acceso y cuentas', 'source': source, 'confirmDemo': True}
+                self.assertEqual(consultar('/api/incidencias/importar-zaintza', 'POST', prueba)[0], 403)
+                status, importada = consultar('/api/incidencias/importar-zaintza', 'POST', prueba, token=token)
+                self.assertEqual(status, 201); self.assertFalse(importada['importReused'])
+                self.assertEqual(importada['context']['source']['environment'], 'demo')
                 detener(); proceso = iniciar(); esperar()
+                nuevo_token = consultar('/api/incidencias/contexto')[1]['token']
+                prueba['requestId'] = 'c' * 32
+                status, repetida = consultar('/api/incidencias/importar-zaintza', 'POST', prueba, token=nuevo_token)
+                self.assertEqual(status, 200); self.assertTrue(repetida['importReused'])
+                self.assertEqual(repetida['id'], importada['id'])
+                self.assertEqual(consultar('/api/incidencias')[1]['total'], 2)
                 recuperada = consultar(ruta)[1]
                 self.assertEqual(recuperada['version'], 2)
                 self.assertTrue(any(item['type'] == 'note' for item in recuperada['activity']))

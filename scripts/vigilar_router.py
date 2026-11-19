@@ -385,7 +385,10 @@ def ejecutar(opciones, usuario, clave, clave_panel=None):
                 return
             try:
                 datos = self.leer_formulario_soporte()
-                if ruta.path == "/api/incidencias":
+                if ruta.path == "/api/incidencias/importar-zaintza":
+                    resultado = incidencias.importar_zaintza(datos)
+                    self.responder(resultado, 200 if resultado.get("importReused") else 201)
+                elif ruta.path == "/api/incidencias":
                     equipo = next((item for item in equipos_soporte() if item["id"] == datos.get("deviceId")), None)
                     self.responder(incidencias.crear(datos, equipo), 201)
                 elif re.fullmatch(r"/api/incidencias/INC-[0-9]{6,12}", ruta.path):

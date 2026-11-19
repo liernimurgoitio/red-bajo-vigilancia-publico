@@ -2,7 +2,7 @@
 
 ## Punto de partida revisado
 
-He revisado el lector de eventos de Windows, las dos reglas de Zaintza SOC y su editor de investigación. Zaintza obtiene eventos 4625 mediante PowerShell, agrupa fallos y conserva estados y notas en su servicio local. Laguntza IT ya permite documentar incidencias en la Raspberry. Todavía no he conectado ambos flujos.
+He revisado el lector de eventos de Windows, las dos reglas de Zaintza SOC y su editor de investigación. Zaintza obtiene eventos 4625 mediante PowerShell, agrupa fallos y conserva estados y notas en su servicio local. Laguntza IT ya permite documentar incidencias en la Raspberry. He implementado una primera conexión manual con exportaciones ficticias v1, probada con datos de ejemplo. Esta nueva entrega todavía no se ha activado en la Raspberry ni se ha publicado en el alojamiento.
 
 | Proyecto | Responsabilidad actual |
 | --- | --- |
@@ -16,7 +16,7 @@ Una detección y una incidencia tienen estados y propósitos distintos. Resolver
 
 El primer recorrido será manual y verificable: abrir una detección en Zaintza, revisar sus evidencias y preparar una exportación para Laguntza. Antes de confirmar el alta se mostrará qué información se va a incorporar. La creación no se disparará por cada evento de Windows ni por una desconexión del inventario.
 
-La propuesta inicial utiliza un archivo JSON de intercambio para no exponer el servicio local de Windows ni guardar contraseñas del panel en el navegador. El importador y el contrato todavía están pendientes de implementación; el formulario actual de Laguntza no acepta estos archivos.
+La propuesta inicial utiliza un archivo JSON de intercambio para no exponer el servicio local de Windows ni guardar contraseñas del panel en el navegador. He implementado el contrato, el exportador ficticio y la vista de revisión. La versión anterior del panel no acepta estos archivos: para utilizarlos requiere esta nueva entrega. [Contrato, pruebas y límites](intercambio-zaintza.md).
 
 ## Datos mínimos que debe contemplar el contrato
 
@@ -40,6 +40,6 @@ Las cuentas, equipos y direcciones de red no se trasladarán automáticamente. L
 
 ## Orden de trabajo
 
-He dejado como siguiente entrega el contrato y un caso ficticio común. Después se implementarán el exportador de Zaintza, la vista de revisión de Laguntza y la validación del servidor, con pruebas antes de modificar el servicio activo. La conexión automática entre servicios queda fuera de esta primera fase.
+He preparado el contrato, un caso ficticio común, el exportador de Zaintza, la vista de revisión de Laguntza y la validación del servidor. He comprobado el flujo en pruebas antes de modificar el servicio activo. El siguiente paso es publicar la demo actualizada y comprobarla manualmente antes de plantear una transferencia de eventos reales. La conexión automática entre servicios queda fuera de esta primera fase.
 
 Para el portafolio se presentará como una integración en preparación hasta que el flujo haya superado las pruebas y se haya comprobado su instalación. Las detecciones seguirán describiéndose como indicios que requieren investigación, sin afirmar que confirman un ataque.
