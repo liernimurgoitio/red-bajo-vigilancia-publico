@@ -63,3 +63,8 @@ python3 scripts/verificar_copia.py /ruta/a/la/copia.tar.gz --extraer ~/recuperac
 Nunca debo indicar como destino la carpeta del panel activo. El programa rechaza destinos existentes, enlaces y rutas que salgan de la carpeta de extracción. En Linux crea carpetas privadas y archivos con permisos restringidos. En Windows se aplican además los permisos de acceso de la carpeta del usuario.
 
 Una suma SHA-256 ayuda a detectar cambios, pero un manifiesto guardado dentro del mismo archivo no demuestra quién ha creado la copia. Debo utilizar copias propias conservadas en ubicaciones de confianza. Esta comprobación no inicia el panel ni prueba que el sistema operativo o las dependencias estén instalados.
+
+
+## Pruebas de la demo
+
+He añadido 13 pruebas en JavaScript para los datos ficticios y las simulaciones de la demo. Se ejecutan con `node --test tests/test_demo.mjs`, además de las 16 pruebas de Python. El flujo de GitHub Actions incluye ambas comprobaciones. Los resultados locales de la demo han sido correctos; la revisión visual del navegador no se ha completado por una limitación de la herramienta de control.
