@@ -41,7 +41,7 @@ He preparado una [demo interactiva](demo/README.md) para explorar el inventario,
 
 ## Integración con Laguntza IT
 
-He preparado el alta manual de incidencias desde los aparatos, el seguimiento y su resolución en SQLite. La demo utiliza datos ficticios y memoria de la página. El servidor privado requiere instalar juntos el código y la interfaz. [Arquitectura, instalación, API y límites](integracion-laguntza.md).
+He preparado el alta manual de incidencias desde los aparatos, el seguimiento y su resolución en SQLite. La demo utiliza datos ficticios y memoria de la página. He activado la versión privada y he comprobado creación, seguimiento, persistencia al refrescar y resolución. [Arquitectura, instalación, API y límites](integracion-laguntza.md).
 
 ## Documentación
 
@@ -135,3 +135,7 @@ Las credenciales del servicio están en archivos privados; no son archivos cifra
 He añadido 16 pruebas de copias, historial, análisis ARM y arranque del panel desde una copia ficticia. He ejecutado todas con resultado correcto en Windows. He comprobado también una ejecución correcta de las 16 pruebas en GitHub Actions, en Linux y Windows con Python 3.11 y 3.13. Los resultados y el alcance se explican en [pruebas-automaticas.md](pruebas-automaticas.md).
 
 El 18 de noviembre de 2026 he instalado el nuevo verificador y la ampliación de la copia en la Raspberry. He creado una copia con 46 archivos, 17 aparatos documentados y 283 registros del historial; he comprobado su contenido en la Raspberry y, después de descargarla, en Windows. El panel ha continuado activo durante la actualización.
+
+## Siguiente integración
+
+He revisado el punto de unión con Zaintza SOC y he definido una [hoja de ruta con criterios de aceptación](hoja-ruta-zaintza.md). La conexión de detecciones con incidencias todavía no está implementada.

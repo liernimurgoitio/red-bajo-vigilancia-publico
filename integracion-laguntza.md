@@ -1,6 +1,23 @@
 # Incidencias con Laguntza IT
 
-He conectado el inventario de Red bajo vigilancia con la interfaz de Laguntza IT para documentar problemas de soporte, su seguimiento y su resolución. Esta fase es una integración de laboratorio con pruebas automáticas; su instalación en la Raspberry se comprueba por separado.
+He conectado el inventario de Red bajo vigilancia con la interfaz de Laguntza IT para documentar problemas de soporte, su seguimiento y su resolución. He activado esta integración de laboratorio en la Raspberry y he publicado la demo ficticia en el portafolio. Las pruebas automáticas y las comprobaciones manuales se describen por separado.
+
+## Comprobación de la entrega · 19 de noviembre de 2026
+
+He completado la activación en la Raspberry. El instalador ha informado de que la interfaz, la API privada y la copia de incidencias han superado sus comprobaciones, y ha conservado los archivos anteriores para una reversión.
+
+En el panel privado he creado una incidencia identificada expresamente como prueba, asociada a la impresora. He cambiado su estado a En curso, he añadido una nota y he comprobado que ambos datos se han conservado al refrescar. Después he cerrado la incidencia con una resolución que indica que no ha sido necesaria ninguna reparación.
+
+He abierto la demo pública desde una ficha de aparato y he comprobado el aviso de datos ficticios y la selección del aparato en Laguntza IT. He comprobado también la ficha actualizada del portafolio, incluido el apartado «Del inventario al soporte IT». He retirado la carpeta de preparación y los archivos anteriores de la zona pública del alojamiento.
+
+La activación y el recorrido del panel se han confirmado durante la sesión con su propietaria; no se ha realizado una nueva inspección remota de sus datos privados para esta anotación. La comprobación pública ha incluido navegación y apertura del formulario; el ensayo completo de resolución en la demo está cubierto por las pruebas de interfaz, y no se atribuye aquí a una nueva comprobación manual.
+
+- Servidor: 29 pruebas Python correctas.
+- Laguntza IT: 20 pruebas de interfaz y contrato, revisión del código y compilación correctas.
+- Demo: 15 pruebas Node correctas.
+- Activador: dos ensayos con archivos temporales y servicios simulados; además se ha confirmado la activación real descrita arriba.
+
+Esta comprobación no equivale a una recuperación completa en otra Raspberry ni a la incorporación de Zaintza SOC.
 
 ## Recorrido de uso
 
