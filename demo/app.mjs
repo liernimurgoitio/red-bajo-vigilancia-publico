@@ -80,6 +80,11 @@ function card(device) {
   tile.append(element('p', device.lastSeen ? 'Última detección del ejemplo: ' + format.format(new Date(device.lastSeen)) : 'Sin detección en el ejemplo', 'seen'));
   const actions = element('div', undefined, 'tile-actions');
   actions.append(editButton(device));
+  const support = element('a', 'Crear incidencia', 'support-link');
+  const state = !model.online ? 'sin_informacion' : device.pending ? 'cambio_por_confirmar' : device.state;
+  support.href = 'soporte/?' + new URLSearchParams({ mode: 'demo-integrada', equipo: device.id, nombre: device.name, estado: state });
+  support.setAttribute('aria-label', 'Crear incidencia de ' + device.name);
+  actions.append(support);
   if (device.power) {
     const button = element('button', device.power === 'encendida' ? 'Simular apagado de TV' : 'Simular encendido de TV');
     button.type = 'button';

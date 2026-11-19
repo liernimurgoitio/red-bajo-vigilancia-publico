@@ -104,17 +104,19 @@ body:has(#cards-area:not([hidden])){max-width:none;width:100%;padding-left:28px;
  .device-status-group .device-card-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 }
 @media(max-width:640px){body:has(#cards-area:not([hidden])){padding-left:14px;padding-right:14px}}
+
+a.support-link{display:inline-flex;align-items:center;justify-content:center;padding:10px;border:1px solid #536984;border-radius:8px;background:#1b2c43;color:#e8edf6;text-decoration:none;font:inherit;line-height:1.4}a.support-link:hover{background:#29425d}a.support-link:focus-visible{outline:3px solid #70dbc5;outline-offset:3px}.support-actions{display:grid;gap:8px}.navigation a.support-link{font-weight:600}.device-tile a.support-link{width:100%;font-size:13px}
 </style>
 </head>
 <body>
 <header><div class="eyebrow">RED BAJO VIGILANCIA / MI PROYECTO</div><h1>Mi red y mi laboratorio</h1><p>Un lugar para consultar los aparatos de casa y las pruebas de seguridad en Ubuntu.</p></header>
-<nav class="navigation" aria-label="Áreas del proyecto"><button id="nav-home" type="button" aria-pressed="true" aria-controls="home-area">Red doméstica</button><button id="nav-cards" type="button" aria-pressed="false" aria-controls="cards-area">Inventario visual</button><button id="nav-history" type="button" aria-pressed="false" aria-controls="history-area">Historial de red</button><button id="nav-ssh" type="button" aria-pressed="false" aria-controls="ssh-area">Laboratorio SSH</button></nav>
+<nav class="navigation" aria-label="Áreas del proyecto"><button id="nav-home" type="button" aria-pressed="true" aria-controls="home-area">Red doméstica</button><button id="nav-cards" type="button" aria-pressed="false" aria-controls="cards-area">Inventario visual</button><button id="nav-history" type="button" aria-pressed="false" aria-controls="history-area">Historial de red</button><button id="nav-ssh" type="button" aria-pressed="false" aria-controls="ssh-area">Laboratorio SSH</button><a class="support-link" href="/soporte/">Incidencias · Laguntza IT</a></nav>
 <main id="home-area" aria-labelledby="home-title">
 <section class="panel"><div class="eyebrow">RED DOMÉSTICA / VISTA UNIFICADA</div><h2 id="home-title" style="margin-top:12px">Mis aparatos y su conexión</h2><p>El router informa del estado. El inventario del proyecto aporta los nombres, tipos y funciones que has documentado.</p><p id="live-summary" role="status" aria-live="polite">Conectando con el programa de vigilancia…</p><p class="muted">La vigilancia continúa mientras el servidor y el programa están encendidos. La última detección se conserva durante esta ejecución.</p></section>
 <div class="device-summary"><section class="card"><div>Equipos conocidos por el router</div><div id="unified-known" class="value">—</div><div class="muted">Incluye su historial</div></section><section class="card"><div>Conectados al router</div><div id="unified-active" class="value green">—</div><div class="muted">Según la última consulta</div></section><section class="card"><div>Desconectados del router</div><div id="unified-inactive" class="value amber">—</div><div class="muted">Según la última consulta</div></section><section class="card"><div>Equipos por identificar</div><div id="unified-unknown" class="value">—</div><div class="muted">Con alias genérico</div></section></div>
 <section class="panel"><h2>Todos los aparatos</h2><div class="inventory-filters"><label>Buscar aparato<input id="unified-search" type="search" placeholder="Nombre, IP, tipo o función"></label><label>Estado<select id="unified-state"><option value="all">Todos</option><option value="conectado">Conectados</option><option value="desconectado">Desconectados</option><option value="pendiente_asociar">Pendientes de asociar</option><option value="sin_comprobar">Estado sin informar</option></select></label><label>Identificación<select id="unified-identity"><option value="all">Todos</option><option value="known">Identificados</option><option value="unknown">Por identificar</option></select></label></div>
 <label><input id="show-ips" type="checkbox" checked> Mostrar direcciones IP</label><p class="muted">La IP se actualiza desde el router. En equipos desconectados puede corresponder a una conexión anterior. Puedes ocultar esta columna para las capturas.</p>
-<div class="lamp-legend" aria-label="Colores de las bombillas"><span class="state-green">● Verde: conectado</span><span class="state-red">● Rojo: desconectado</span><span class="state-yellow">● Amarillo: cambio por confirmar</span><span class="state-gray">● Gris: sin información actual</span></div><p class="muted">El amarillo aparece al detectar un cambio y se mantiene hasta confirmarlo en otra consulta del router. Los contadores reflejan la última respuesta del router.</p><p id="unified-count" class="muted" role="status" aria-live="polite"></p><div class="table-wrap"><table class="device-table"><thead><tr><th scope="col">Aparato</th><th id="ip-heading" scope="col">IP informada</th><th scope="col">Tipo y conexión</th><th scope="col">Estado observado</th><th scope="col">Función</th><th scope="col">Identificación</th><th scope="col">Última detección</th><th scope="col">Revisión anotada</th><th scope="col">Editar</th></tr></thead><tbody id="unified-rows"></tbody></table></div>
+<div class="lamp-legend" aria-label="Colores de las bombillas"><span class="state-green">● Verde: conectado</span><span class="state-red">● Rojo: desconectado</span><span class="state-yellow">● Amarillo: cambio por confirmar</span><span class="state-gray">● Gris: sin información actual</span></div><p class="muted">El amarillo aparece al detectar un cambio y se mantiene hasta confirmarlo en otra consulta del router. Los contadores reflejan la última respuesta del router.</p><p id="unified-count" class="muted" role="status" aria-live="polite"></p><div class="table-wrap"><table class="device-table"><thead><tr><th scope="col">Aparato</th><th id="ip-heading" scope="col">IP informada</th><th scope="col">Tipo y conexión</th><th scope="col">Estado observado</th><th scope="col">Función</th><th scope="col">Identificación</th><th scope="col">Última detección</th><th scope="col">Revisión anotada</th><th scope="col">Acciones</th></tr></thead><tbody id="unified-rows"></tbody></table></div>
 <p id="inventory-status" class="muted" role="status" aria-live="polite"></p><p class="muted">El router principal se añade como equipo principal. Las anotaciones del inventario pendientes de asociar pueden corresponder a un equipo con alias genérico; su estado queda pendiente de confirmar.</p></section>
 <section class="panel"><h2>Gestionar mis aparatos</h2><p>Pulsa <strong>Editar</strong> en una fila para asignar un nombre genérico, tipo y función. Los cambios se guardan en la configuración privada del proyecto.</p><p>El programa genera automáticamente la tabla de <strong>inventario-red.md</strong> con los aparatos que has documentado. Las direcciones privadas permanecen en <strong>dispositivos.local.json</strong>.</p><p>Edita directamente los campos del aparato y pulsa Guardar cambios. Cuando haya anotaciones sin asociar, aparecerá la opción <strong>Unir con una anotación pendiente</strong>.</p><p id="save-global" class="save-note" role="status" aria-live="polite"></p></section>
 </main>
@@ -580,7 +582,11 @@ function renderUnified() {
         editButton.setAttribute('aria-label','Editar ' + item.alias);
         editButton.disabled = !liveAvailable || !state.edicion_token || savingDevice;
         editButton.addEventListener('click',() => openDeviceEditor(item));
-        actionCell.append(editButton); row.append(actionCell);
+        const actions = document.createElement('div'); actions.className = 'support-actions';
+        const support = document.createElement('a'); support.className = 'support-link';
+        support.href = '/soporte/?equipo=' + encodeURIComponent(item.id); support.textContent = 'Crear incidencia';
+        support.setAttribute('aria-label','Crear incidencia de ' + item.alias);
+        actions.append(editButton,support); actionCell.append(actions); row.append(actionCell);
         body.append(row);
     }
     }
@@ -744,7 +750,10 @@ function renderDeviceCards() {
             note.textContent = tvMessages.get(item.id) || 'Encendido por red: pendiente de comprobar en esta TV.';
             card.append(controls,note);
         }
-        card.append(edit); groups.get(deviceStatus(item,stale).tone).append(card);
+        const support = document.createElement('a'); support.className = 'support-link';
+        support.href = '/soporte/?equipo=' + encodeURIComponent(item.id); support.textContent = 'Crear incidencia';
+        support.setAttribute('aria-label','Crear incidencia de ' + item.alias);
+        card.append(edit,support); groups.get(deviceStatus(item,stale).tone).append(card);
     }
     document.querySelector('#cards-count').textContent = `${selected.length} de ${devices.length} registros. La vista muestra inicialmente los aparatos identificados.`;
     document.querySelector('#cards-empty').textContent = selected.length ? '' : liveState ? 'No hay aparatos que coincidan con estos filtros.' : 'Inicia la vigilancia y abre el panel local para cargar tus aparatos.';

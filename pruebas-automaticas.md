@@ -68,3 +68,7 @@ Una suma SHA-256 ayuda a detectar cambios, pero un manifiesto guardado dentro de
 ## Pruebas de la demo
 
 He añadido 13 pruebas en JavaScript para los datos ficticios y las simulaciones de la demo. Se ejecutan con `node --test tests/test_demo.mjs`, además de las 16 pruebas de Python. El flujo de GitHub Actions incluye ambas comprobaciones. Los resultados locales de la demo han sido correctos; la revisión visual del navegador no se ha completado por una limitación de la herramienta de control.
+
+## Integración con Laguntza IT
+
+He añadido pruebas de persistencia de incidencias, resolución y reapertura, reintentos sin duplicados, conflictos entre editores, filtros, protección HTTP y recuperación de notas desde una copia. El servidor utiliza un router ficticio y solo escucha en loopback durante estas pruebas. La preparación de la interfaz comprueba que no se instalen archivos privados y conserva la versión anterior. Las pruebas de React se ejecutan en el repositorio Laguntza IT.

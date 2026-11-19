@@ -6,6 +6,7 @@ __pycache__/
 *.pyc
 # Historial privado de la red doméstica
 historial-red.local.sqlite3*
+incidencias.local.sqlite3*
 
 # Modelo descargable para el recorte de fotos
 modelos/
@@ -22,3 +23,6 @@ tailscale.local.json
 .ssh/
 # Copia antigua del panel: el archivo servido está en la raíz
 /scripts/panel-ssh.html
+
+# Interfaz compilada desde el código de Laguntza IT
+/web/laguntza*/

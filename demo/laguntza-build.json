@@ -1,0 +1,12 @@
+{
+  "source": "https://github.com/liernimurgoitio/laguntza-it",
+  "commit": "ef280a8",
+  "build": "npm ci && npm run build (client)",
+  "mode": "demo-integrada: meta en index.html, sin API privada",
+  "sha256": {
+    "favicon.svg": "f9328a85dde3db634c3cab12fb433f99af67541e024f6ba0bee9eed8e2373571",
+    "index.html": "d4b865b45d8305e937c6b262208069ddcdd78ca7f434bbc6b21d8a369f52967f",
+    "assets/index-CVAcPchP.js": "fc29e703bd83dc81e6e8f7996a5e7b54b6e54b2903b9234b7a539b757163a09c",
+    "assets/index-eoV8QNUp.css": "9cc53a7f6b88d8206014cfbee17834fec73b296c4a0f4488865a1adc00dc3931"
+  }
+}

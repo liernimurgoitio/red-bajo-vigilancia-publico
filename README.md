@@ -39,6 +39,10 @@ El servidor escucha en las direcciones concretas de la red doméstica y de Tails
 
 He preparado una [demo interactiva](demo/README.md) para explorar el inventario, el historial y los ejemplos SSH sin conectarse a una red real. Incluye simulaciones de cambios y recuperación de consultas. Las instrucciones permiten abrirla localmente.
 
+## Integración con Laguntza IT
+
+He preparado el alta manual de incidencias desde los aparatos, el seguimiento y su resolución en SQLite. La demo utiliza datos ficticios y memoria de la página. El servidor privado requiere instalar juntos el código y la interfaz. [Arquitectura, instalación, API y límites](integracion-laguntza.md).
+
 ## Documentación
 
 - [Guía rápida de uso y mantenimiento](guia-rapida.md).

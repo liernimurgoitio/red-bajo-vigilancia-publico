@@ -42,3 +42,9 @@ He comprobado 13 pruebas de estados, transiciones, historial, edición, encendid
 Los enlaces de la cabecera permiten salir al portafolio y al código en GitHub. Las fotos son ilustrativas y no corresponden a datos obtenidos de una red durante la demo.
 
 La demo no comprueba la compatibilidad con routers o televisores, los permisos de la Raspberry ni la recuperación de un servidor real. Esas pruebas están documentadas por separado en el proyecto.
+
+## Incidencias con Laguntza IT
+
+Cada ficha permite abrir **Crear incidencia** con el aparato seleccionado. La sección de soporte incluye altas, notas, resolución y reapertura con datos ficticios. Los cambios se mantienen en memoria y se pierden al recargar; la página de soporte recibe solo el nombre, el identificador y el estado de ejemplo mediante la URL.
+
+El código se mantiene en [Laguntza IT](https://github.com/liernimurgoitio/laguntza-it). Para reproducir la entrega: compila `client` con `npm ci` y `npm run build`, copia su `dist` a `demo/soporte` y añade `<meta name="laguntza-mode" content="demo-integrada" />` en la cabecera de su `index.html`. Esa marca fija el modo ficticio también cuando la demo se aloja en otra carpeta. El archivo `laguntza-build.json` registra el origen y las sumas de los archivos entregados. No copies fuentes, dependencias ni bases de datos al alojamiento público.

@@ -81,3 +81,7 @@ Si cambia la dirección de la Raspberry, debe actualizarse la tarea ejecutando d
 He añadido `scripts/verificar_copia.py` para comprobar archivos, inventario e historial, y extraer únicamente en una carpeta nueva. He probado también el arranque de un panel desde una copia ficticia extraída, sin utilizar el router ni las credenciales reales. Las instrucciones y los límites están en [pruebas-automaticas.md](pruebas-automaticas.md).
 
 He ampliado el programa de copia para incluir también los archivos PowerShell de `scripts/`. El 18 de noviembre he instalado la ampliación y el verificador en la Raspberry y he creado una nueva copia real a las 17:19 CET. He verificado sus 46 archivos, la lectura de los 17 aparatos documentados y la integridad de sus 283 registros del historial. Después he descargado esa copia a Windows y he repetido la verificación con el mismo resultado. El panel ha seguido activo durante la actualización.
+
+## Incidencias de Laguntza IT
+
+La versión con soporte incluye `incidencias.local.sqlite3` mediante una captura de SQLite y los archivos compilados de `web/laguntza`. La verificación también comprueba la integridad y las referencias de las notas. Las copias anteriores que no contienen incidencias siguen siendo compatibles. [Detalle de la integración](integracion-laguntza.md).

@@ -20,11 +20,12 @@ import time
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, urlsplit, unquote
 
 from inventario_panel import AlmacenInventario, ConflictoInventario, recorte_disponible
 from estado_tv import consultar_estado, enviar_encendido, enviar_apagado
 from historial_red import HistorialRed
+from incidencias import Incidencias, ConflictoIncidencia, IncidenciaNoExiste
 
 from sagemcom_api.client import SagemcomClient
 from sagemcom_api.enums import ApiMode, EncryptionMethod
@@ -174,6 +175,7 @@ def ejecutar(opciones, usuario, clave, clave_panel=None):
     if type(intervalo) is not int or not 1 <= intervalo <= 3600:
         raise ValueError("Usa un intervalo de entre 1 y 3600 segundos.")
     historial = HistorialRed(RAIZ / "historial-red.local.sqlite3")
+    incidencias = Incidencias(RAIZ / "incidencias.local.sqlite3")
     token = secrets.token_urlsafe(32)
     objetivos, detalles, observaciones = {}, {}, {}
     ultima_lectura = {"equipos": None, "pc": None}
@@ -329,7 +331,89 @@ def ejecutar(opciones, usuario, clave, clave_panel=None):
                 estado.update(error="No se ha podido acceder: " + type(error).__name__, comprobando=False)
             print(estado["error"], flush=True)
 
+    def equipos_soporte():
+        with bloqueo:
+            contenido, _ = almacen.leer()
+            equipos = [{"id": item["id"], "name": item["alias"],
+                        "state": "sin_informacion" if estado.get("error") else item.get("estado", "sin_comprobar"),
+                        "observedAt": estado.get("ultima_comprobacion")}
+                       for item in estado["dispositivos"]]
+            documentos = {item.get("documento_id") for item in estado["dispositivos"]}
+            for item in contenido["dispositivos"]:
+                if item.get("panel_id") and item["panel_id"] not in documentos:
+                    equipos.append({"id": "inventario-" + item["panel_id"], "name": item["alias"],
+                                    "state": "pendiente_asociar", "observedAt": None})
+            return equipos
+
     class Peticion(BaseHTTPRequestHandler):
+        def leer_formulario_soporte(self):
+            self.connection.settimeout(10)
+            try:
+                longitud = int(self.headers.get("Content-Length", "0"))
+            except ValueError as error:
+                raise ValueError("Longitud de formulario no válida.") from error
+            if not 0 < longitud <= 32768 or self.headers.get_content_type() != "application/json":
+                raise ValueError("El formulario debe ser JSON y no superar 32 KiB.")
+            datos = json.loads(self.rfile.read(longitud).decode("utf-8"))
+            if not isinstance(datos, dict):
+                raise ValueError("Formulario de incidencia no válido.")
+            return datos
+
+        def consultar_soporte(self, ruta):
+            try:
+                if ruta.path == "/api/incidencias/contexto":
+                    self.responder({"devices": equipos_soporte(), "token": token, "source": "red-bajo-vigilancia"})
+                elif ruta.path == "/api/incidencias":
+                    consulta = parse_qs(ruta.query)
+                    self.responder(incidencias.listar(consulta.get("q", [""])[0],
+                        consulta.get("status", ["all"])[0], consulta.get("priority", ["all"])[0],
+                        int(consulta.get("page", ["1"])[0])))
+                elif re.fullmatch(r"/api/incidencias/INC-[0-9]{6,12}", ruta.path):
+                    self.responder(incidencias.detalle(ruta.path.rsplit("/", 1)[1]))
+                else:
+                    self.responder({"error": "Ruta de incidencias no encontrada."}, 404)
+            except IncidenciaNoExiste as error:
+                self.responder({"error": str(error)}, 404)
+            except (ValueError, TypeError) as error:
+                self.responder({"error": str(error)}, 400)
+            except (OSError, sqlite3.Error):
+                self.responder({"error": "No se han podido consultar las incidencias. Revisa los permisos y el almacenamiento."}, 500)
+
+        def guardar_soporte(self, ruta):
+            if not self.autorizado():
+                self.responder({"error": "Actualiza el panel de incidencias antes de guardar."}, 403)
+                return
+            try:
+                datos = self.leer_formulario_soporte()
+                if ruta.path == "/api/incidencias":
+                    equipo = next((item for item in equipos_soporte() if item["id"] == datos.get("deviceId")), None)
+                    self.responder(incidencias.crear(datos, equipo), 201)
+                elif re.fullmatch(r"/api/incidencias/INC-[0-9]{6,12}", ruta.path):
+                    self.responder(incidencias.actualizar(ruta.path.rsplit("/", 1)[1], datos))
+                else:
+                    self.responder({"error": "Ruta de incidencias no encontrada."}, 404)
+            except IncidenciaNoExiste as error:
+                self.responder({"error": str(error)}, 404)
+            except ConflictoIncidencia as error:
+                self.responder({"error": str(error)}, 409)
+            except (ValueError, TypeError, UnicodeError) as error:
+                self.responder({"error": str(error)}, 400)
+            except (OSError, sqlite3.Error):
+                self.responder({"error": "No se ha podido guardar la incidencia. Comprueba el almacenamiento y actualiza la bandeja antes de repetir."}, 500)
+
+        def servir_soporte(self, ruta):
+            base = (RAIZ / "web" / "laguntza").resolve()
+            tipos = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
+                     ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png",
+                     ".ico": "image/x-icon", ".woff2": "font/woff2"}
+            try:
+                archivo = (base / (unquote(ruta.path[len("/soporte/"):]) or "index.html")).resolve()
+                if not archivo.is_relative_to(base) or archivo.suffix not in tipos or not archivo.is_file():
+                    raise ValueError("Archivo no válido.")
+                self.responder(archivo.read_bytes(), tipo=tipos[archivo.suffix])
+            except (ValueError, OSError):
+                self.responder({"error": "No se ha encontrado la interfaz de Laguntza IT. Revisa su instalación."}, 404)
+
         def responder(self, contenido, codigo=200, tipo="application/json; charset=utf-8"):
             datos = json.dumps(contenido, ensure_ascii=False).encode("utf-8") if isinstance(contenido, dict) else contenido
             self.send_response(codigo)
@@ -394,7 +478,16 @@ def ejecutar(opciones, usuario, clave, clave_panel=None):
                 self.responder({"error": "Direccion local no valida."}, 403)
                 return
             ruta = urlsplit(self.path)
-            if ruta.path == "/api/estado":
+            if ruta.path == "/api/incidencias" or ruta.path.startswith("/api/incidencias/"):
+                self.consultar_soporte(ruta)
+            elif ruta.path == "/soporte":
+                self.send_response(302)
+                self.send_header("Location", "/soporte/" + ("?" + ruta.query if ruta.query else ""))
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+            elif ruta.path.startswith("/soporte/"):
+                self.servir_soporte(ruta)
+            elif ruta.path == "/api/estado":
                 with bloqueo:
                     respuesta = dict(estado)
                     respuesta["recorte_fotos"] = recorte_disponible()
@@ -465,6 +558,10 @@ def ejecutar(opciones, usuario, clave, clave_panel=None):
 
         def do_POST(self):
             if not self.acceso_panel():
+                return
+            ruta = urlsplit(self.path)
+            if ruta.path == "/api/incidencias" or ruta.path.startswith("/api/incidencias/"):
+                self.guardar_soporte(ruta)
                 return
             if urlsplit(self.path).path == "/api/tv":
                 self.controlar_televisor()

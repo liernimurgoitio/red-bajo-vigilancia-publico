@@ -52,6 +52,7 @@ def crear_copia(proyecto, credenciales, destino, conservar=7):
                     candidatos += list((proyecto / 'scripts').glob('*.py'))
                     candidatos += list((proyecto / 'scripts').glob('*.ps1'))
                     candidatos += list((proyecto / 'fotos-aparatos').glob('*'))
+                    candidatos += [p for p in (proyecto / 'web' / 'laguntza').rglob('*') if p.is_file() and p.suffix in ('.html', '.js', '.css', '.svg', '.png', '.ico', '.woff2')]
                     remoto = proyecto / 'tailscale.local.json'
                     if remoto.exists():
                         json.loads(remoto.read_text(encoding='utf-8'))
@@ -64,21 +65,22 @@ def crear_copia(proyecto, credenciales, destino, conservar=7):
                         if ruta.is_symlink():
                             raise ValueError('Las credenciales no deben ser enlaces.')
                         agregar(archivo, 'credenciales/' + nombre_credencial, ruta.read_bytes())
-                    base = proyecto / 'historial-red.local.sqlite3'
-                    if base.exists():
-                        limite = time.monotonic() + 30
+                    for nombre_base in ('historial-red.local.sqlite3', 'incidencias.local.sqlite3'):
+                        base = proyecto / nombre_base
+                        if base.exists():
+                            limite = time.monotonic() + 30
 
-                        def progreso(*_):
-                            if time.monotonic() > limite:
-                                raise TimeoutError('El historial no ha podido copiarse a tiempo.')
+                            def progreso(*_):
+                                if time.monotonic() > limite:
+                                    raise TimeoutError('El historial no ha podido copiarse a tiempo.')
 
-                        snapshot = temporal / 'historial.sqlite3'
-                        with closing(sqlite3.connect(base.resolve().as_uri() + '?mode=ro', uri=True, timeout=5)) as origen:
-                            with closing(sqlite3.connect(snapshot)) as copia:
-                                origen.backup(copia, pages=128, progress=progreso)
-                                if copia.execute('PRAGMA quick_check').fetchone()[0] != 'ok':
-                                    raise ValueError('La copia del historial no supera la comprobación.')
-                        agregar(archivo, 'proyecto/historial-red.local.sqlite3', snapshot.read_bytes())
+                            snapshot = temporal / nombre_base
+                            with closing(sqlite3.connect(base.resolve().as_uri() + '?mode=ro', uri=True, timeout=5)) as origen:
+                                with closing(sqlite3.connect(snapshot)) as copia:
+                                    origen.backup(copia, pages=128, progress=progreso)
+                                    if copia.execute('PRAGMA quick_check').fetchone()[0] != 'ok':
+                                        raise ValueError('La copia del historial no supera la comprobación.')
+                            agregar(archivo, 'proyecto/' + nombre_base, snapshot.read_bytes())
                     manifiesto = json.dumps({'formato': 1, 'sha256': dict(hashes)}, ensure_ascii=False, indent=2).encode()
                     agregar(archivo, 'manifest.json', manifiesto)
                 salida.flush()
