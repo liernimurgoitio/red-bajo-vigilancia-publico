@@ -1,12 +1,14 @@
 {
   "source": "https://github.com/liernimurgoitio/laguntza-it",
-  "commit": "8270a00b5dff579423ea966ae6e9fc62a9aaa942",
+  "commit": "88ece379d102d247334f0930c8910791133e5ac3",
   "build": "npm ci && npm run build (client)",
   "mode": "demo-integrada: meta en index.html, sin API privada",
   "sha256": {
     "favicon.svg": "60a9a3772d19af2e03422e94ad430f0a83bc1f1762fd4ae3f511957cab34b41d",
-    "index.html": "8bc8ec7f78f0fba9ef385180fe9f02a1743c9f427cd6a2be0921bb3bc1a296da",
+    "index.html": "ea52aa8c43cee4fe7462677d2667c152aea4a5d184449ccb6059dffa65c5991c",
     "assets/index-BliZocG7.css": "98947f0d937f676ea9e0332cf6764a349b035b303f25364698a1aec522e52c8a",
+    "assets/index-CdkPJiJ0.js": "5c974aec64ba97d5e754c4754ce888d82eec4c49ac00e39c40a1f35c8cc66d8a",
+    "assets/index-CISl8Q0C.css": "65f212ca3d305cfa14d4bf1518fa2373f3034ec0f9939170d2b6ec22867d0573",
     "assets/index-CPsA9nhp.js": "3f071a0abf4d1c63d043ed94da0dbe5b48413650b866a53ebd14c55f858ae8ce",
     "assets/index-CVAcPchP.js": "fc29e703bd83dc81e6e8f7996a5e7b54b6e54b2903b9234b7a539b757163a09c",
     "assets/index-eoV8QNUp.css": "9cc53a7f6b88d8206014cfbee17834fec73b296c4a0f4488865a1adc00dc3931"
