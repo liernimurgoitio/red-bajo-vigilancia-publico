@@ -159,7 +159,7 @@ class Activacion(unittest.TestCase):
         fallado = False
         def copiar(origen, destino, *args, **kwargs):
             nonlocal fallado
-            if Path(origen).is_relative_to(self.entrega / 'archivos') and not fallado:
+            if Path(origen).resolve().is_relative_to((self.entrega / 'archivos').resolve()) and not fallado:
                 fallado = True
                 raise OSError('Fallo simulado de escritura')
             return original(origen, destino, *args, **kwargs)
@@ -168,6 +168,7 @@ class Activacion(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'recuperado los archivos y la base anteriores'):
                 self.activar()
         self.assertEqual(self.estado_base(), anterior)
+        self.assertTrue(fallado)
         self.assertEqual((self.proyecto / 'panel-ssh.html').read_text(), 'version anterior')
         self.assertTrue(self.servicios[activador.SERVICIO])
 
