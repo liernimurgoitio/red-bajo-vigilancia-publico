@@ -42,7 +42,7 @@ La prueba de integración recupera el código desde el archivo de copia, lo inic
 
 El archivo `.github/workflows/pruebas.yml` prepara estas comprobaciones para Linux y Windows, con Python 3.11 y 3.13, al subir cambios a `main` o abrir una solicitud de cambios. También permite iniciarlas manualmente desde Actions. No necesita secretos del laboratorio.
 
-El 18 de noviembre de 2026 he comprobado también una ejecución de GitHub Actions en el repositorio de trabajo: las cuatro combinaciones de sistema y versión de Python han terminado correctamente. Cada una ha ejecutado las 16 pruebas, incluida la del panel recuperado. El resultado de una ejecución no sustituye al de los cambios posteriores ni a una prueba en hardware ARM. Una instalación limpia de Raspberry Pi OS todavía requiere una comprobación real de restauración y arranque.
+El 18 de noviembre de 2026 he comprobado también una [ejecución de GitHub Actions](https://github.com/liernimurgoitio/red-bajo-vigilancia/actions/runs/44325172139): las cuatro combinaciones de sistema y versión de Python han terminado correctamente. Cada una ha ejecutado las 16 pruebas, incluida la del panel recuperado. El resultado de una ejecución no sustituye al de los cambios posteriores ni a una prueba en hardware ARM. Una instalación limpia de Raspberry Pi OS todavía requiere una comprobación real de restauración y arranque.
 
 ## Verificar una copia real
 
@@ -64,11 +64,10 @@ Nunca debo indicar como destino la carpeta del panel activo. El programa rechaza
 
 Una suma SHA-256 ayuda a detectar cambios, pero un manifiesto guardado dentro del mismo archivo no demuestra quién ha creado la copia. Debo utilizar copias propias conservadas en ubicaciones de confianza. Esta comprobación no inicia el panel ni prueba que el sistema operativo o las dependencias estén instalados.
 
-
-## Pruebas de la demo
-
-He añadido 13 pruebas en JavaScript para los datos ficticios y las simulaciones de la demo. Se ejecutan con `node --test tests/test_demo.mjs`, además de las 16 pruebas de Python. El flujo de GitHub Actions incluye ambas comprobaciones. Los resultados locales de la demo han sido correctos; la revisión visual del navegador no se ha completado por una limitación de la herramienta de control.
-
 ## Integración con Laguntza IT
 
 He añadido pruebas de persistencia de incidencias, resolución y reapertura, reintentos sin duplicados, conflictos entre editores, filtros, protección HTTP y recuperación de notas desde una copia. El servidor utiliza un router ficticio y solo escucha en loopback durante estas pruebas. La preparación de la interfaz comprueba que no se instalen archivos privados y conserva la versión anterior. Las pruebas de React se ejecutan en el repositorio Laguntza IT.
+
+## Activación y vuelta atrás
+
+He añadido siete ensayos del activador con archivos temporales, bases SQLite de prueba y operaciones de systemd simuladas. Comprueban la conservación de datos, la recuperación del esquema anterior y de la interfaz tras un fallo, y el tratamiento de errores de las copias. La suite completa del servidor suma 42 pruebas. La activación en la Raspberry se registra por separado después de ejecutarla.
