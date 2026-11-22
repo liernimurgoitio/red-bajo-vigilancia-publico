@@ -1,8 +1,8 @@
-# Próxima fase: Zaintza SOC y Laguntza IT
+# Integración de Zaintza SOC y Laguntza IT: estado y próximos pasos
 
 ## Punto de partida revisado
 
-He revisado el lector de eventos de Windows, las dos reglas de Zaintza SOC y su editor de investigación. Zaintza obtiene eventos 4625 mediante PowerShell, agrupa fallos y conserva estados y notas en su servicio local. Laguntza IT ya permite documentar incidencias en la Raspberry. He implementado una primera conexión manual con exportaciones ficticias v1, probada con datos de ejemplo. Esta nueva entrega todavía no se ha activado en la Raspberry ni se ha publicado en el alojamiento.
+He revisado el lector de eventos de Windows, las dos reglas de Zaintza SOC y su editor de investigación. Zaintza obtiene eventos 4625 mediante PowerShell, agrupa fallos y conserva estados y notas en su servicio local. Laguntza IT ya permite documentar incidencias en la Raspberry. He implementado una primera conexión manual con exportaciones ficticias v1, probada con datos de ejemplo. He publicado la demo y he activado la entrega privada en la Raspberry. El 22 de noviembre de 2026 he comprobado manualmente importación, conservación al refrescar, control de duplicados, resolución y copia de seguridad con el ejemplo ficticio común.
 
 | Proyecto | Responsabilidad actual |
 | --- | --- |
@@ -12,11 +12,11 @@ He revisado el lector de eventos de Windows, las dos reglas de Zaintza SOC y su 
 
 Una detección y una incidencia tienen estados y propósitos distintos. Resolver una incidencia de soporte no debe cerrar automáticamente una investigación de seguridad.
 
-## Primera integración propuesta
+## Primera integración comprobada
 
-El primer recorrido será manual y verificable: abrir una detección en Zaintza, revisar sus evidencias y preparar una exportación para Laguntza. Antes de confirmar el alta se mostrará qué información se va a incorporar. La creación no se disparará por cada evento de Windows ni por una desconexión del inventario.
+El recorrido es manual y verificable: abrir una detección en Zaintza, revisar sus evidencias y preparar una exportación para Laguntza. Antes de confirmar el alta se mostrará qué información se va a incorporar. La creación no se disparará por cada evento de Windows ni por una desconexión del inventario.
 
-La propuesta inicial utiliza un archivo JSON de intercambio para no exponer el servicio local de Windows ni guardar contraseñas del panel en el navegador. He implementado el contrato, el exportador ficticio y la vista de revisión. La versión anterior del panel no acepta estos archivos: para utilizarlos requiere esta nueva entrega. [Contrato, pruebas y límites](intercambio-zaintza.md).
+La propuesta inicial utiliza un archivo JSON de intercambio para no exponer el servicio local de Windows ni guardar contraseñas del panel en el navegador. He implementado el contrato, el exportador ficticio y la vista de revisión. El panel actualizado acepta estos archivos; las instalaciones anteriores requieren actualizar el servidor y la interfaz juntos. [Contrato, pruebas y límites](intercambio-zaintza.md).
 
 ## Datos mínimos que debe contemplar el contrato
 
@@ -40,6 +40,6 @@ Las cuentas, equipos y direcciones de red no se trasladarán automáticamente. L
 
 ## Orden de trabajo
 
-He preparado el contrato, un caso ficticio común, el exportador de Zaintza, la vista de revisión de Laguntza y la validación del servidor. He comprobado el flujo en pruebas antes de modificar el servicio activo. El siguiente paso es publicar la demo actualizada y comprobarla manualmente antes de plantear una transferencia de eventos reales. La conexión automática entre servicios queda fuera de esta primera fase.
+He preparado el contrato, un caso ficticio común, el exportador de Zaintza, la vista de revisión de Laguntza y la validación del servidor. He comprobado el flujo en pruebas antes de modificar el servicio activo. La publicación y la comprobación manual del importador ya están completadas. El siguiente ensayo pendiente es documentar la exportación desde la interfaz de Zaintza y su importación en Laguntza con el mismo escenario ficticio. La transferencia de eventos reales requiere una fase de diseño y comprobación independiente. La conexión automática entre servicios queda fuera de esta primera fase.
 
 Para el portafolio se presentará como una integración en preparación hasta que el flujo haya superado las pruebas y se haya comprobado su instalación. Las detecciones seguirán describiéndose como indicios que requieren investigación, sin afirmar que confirman un ataque.

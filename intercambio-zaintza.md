@@ -1,6 +1,20 @@
 # Intercambio ficticio entre Zaintza SOC y Laguntza IT
 
-He implementado un recorrido manual y limitado a ejemplos ficticios. El código y las pruebas están preparados; esta entrega requiere una nueva publicación y una activación separada. No se ha modificado la investigación ni el registro Seguridad de ningún equipo real.
+He implementado un recorrido manual y limitado a ejemplos ficticios. He publicado la demo y he activado esta entrega en la Raspberry. He comprobado el recorrido manual descrito a continuación. No se ha modificado la investigación ni el registro Seguridad de ningún equipo real.
+
+## Comprobación manual · 22 de noviembre de 2026
+
+He confirmado la publicación de los avisos junto a los formularios en la demo de Laguntza. He repetido la importación del mismo ejemplo y he comprobado que el aviso aparece debajo de Crear incidencia, con enlace al detalle y sin duplicar la incidencia. Las versiones anteriores y la carpeta temporal se han retirado de la zona pública del alojamiento.
+
+He activado la entrega privada en la Raspberry. El activador ha informado de que la interfaz, la API y la copia de incidencias han superado las comprobaciones. Ha conservado la incidencia anterior y sus cinco registros de seguimiento, además del programa y la base anteriores para una posible reversión.
+
+Después he abierto el panel privado y he comprobado que la nota y la resolución anteriores siguen disponibles. He importado el ejemplo ficticio de Zaintza y he creado INC-000002. He refrescado la página, he comprobado que conserva el origen ficticio y he importado de nuevo el mismo JSON. El panel ha abierto la incidencia existente y el total ha seguido siendo de dos incidencias. He cerrado INC-000002 como Resuelta con una descripción explícita de la prueba ficticia.
+
+He solicitado después una copia nueva. El registro de systemd del 22 de noviembre muestra el inicio a las 12:16:09 y el mensaje de copia creada y verificada a las 12:16:11, seguido de una finalización correcta del servicio.
+
+Estas comprobaciones manuales se han confirmado durante la sesión con la propietaria mediante capturas, resultados del panel y salida de su terminal. No se ha realizado una nueva lectura remota del contenido de las incidencias para esta anotación. El archivo utilizado ha sido el ejemplo ficticio común; esta sesión no acredita una captura de eventos reales de Windows ni una recuperación completa en otra Raspberry.
+
+Las pruebas automáticas se mantienen como evidencia separada: 42 pruebas Python del servidor, 26 de interfaz y contrato de Laguntza y 18 de Zaintza. Los siete ensayos del activador se han ejecutado también con datos temporales en el Python de la Raspberry antes de la activación real.
 
 ## Recorrido
 

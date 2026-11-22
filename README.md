@@ -138,4 +138,4 @@ El 18 de noviembre de 2026 he instalado el nuevo verificador y la ampliación de
 
 ## Siguiente integración
 
-He revisado el punto de unión con Zaintza SOC y he definido una [hoja de ruta con criterios de aceptación](hoja-ruta-zaintza.md). He implementado un intercambio manual de detecciones ficticias v1. La nueva entrega está preparada para pruebas; todavía no se ha habilitado la transferencia de eventos reales. [Contrato y comprobaciones](intercambio-zaintza.md).
+He revisado el punto de unión con Zaintza SOC y he definido una [hoja de ruta con criterios de aceptación](hoja-ruta-zaintza.md). He implementado un intercambio manual de detecciones ficticias v1. He activado la entrega en la Raspberry y he comprobado importación, persistencia al refrescar, control de duplicados, resolución y copia de seguridad con el ejemplo ficticio común. La transferencia de eventos reales sigue sin estar habilitada. [Contrato y comprobaciones](intercambio-zaintza.md).

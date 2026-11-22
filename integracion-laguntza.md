@@ -36,7 +36,7 @@ El nombre y el estado observado se conservan como evidencia del momento de creac
 | Demo pública, `/demo/soporte/` | Memoria de la página; se reinicia al recargar | Datos ficticios; no llama a la API privada |
 | Prototipo independiente de Laguntza | Memoria de la página | Pruebas de interfaz con datos ficticios |
 
-El código React se mantiene en [Laguntza IT](https://github.com/liernimurgoitio/laguntza-it). Este repositorio mantiene el servidor Python, las pruebas HTTP y la preparación de su compilación. He preparado un intercambio manual de detecciones ficticias de Zaintza SOC; su publicación y activación corresponden a una entrega posterior a la comprobación anterior. [Contrato y límites](intercambio-zaintza.md).
+El código React se mantiene en [Laguntza IT](https://github.com/liernimurgoitio/laguntza-it). Este repositorio mantiene el servidor Python, las pruebas HTTP y la preparación de su compilación. He completado una entrega posterior de intercambio manual de detecciones ficticias de Zaintza SOC, publicada y activada en la Raspberry. Su comprobación manual del 22 de noviembre se documenta por separado. [Contrato y límites](intercambio-zaintza.md).
 
 ## Preparar la interfaz
 
