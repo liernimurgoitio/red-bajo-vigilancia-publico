@@ -16,6 +16,21 @@ Estas comprobaciones manuales se han confirmado durante la sesión con la propie
 
 Las pruebas automáticas se mantienen como evidencia separada: 42 pruebas Python del servidor, 26 de interfaz y contrato de Laguntza y 18 de Zaintza. Los siete ensayos del activador se han ejecutado también con datos temporales en el Python de la Raspberry antes de la activación real.
 
+## Comprobación de ambas reglas · 22 y 24 de noviembre de 2026
+
+He completado el recorrido desde la interfaz de la demo de Zaintza hasta Laguntza IT en el panel privado de la Raspberry, utilizando exclusivamente detecciones ficticias.
+
+| Regla y evento exportado | Evidencias | Resultado en Laguntza |
+| --- | --- | --- |
+| ZAINTZA-AUTH-001 · DEMO-4625-1006 | 6 eventos ficticios | He abierto INC-000002, ya existente, sin duplicarla y conservando su estado Resuelta. |
+| ZAINTZA-AUTH-002 · DEMO-4625-3005 | 5 eventos ficticios | He creado INC-000003 y he comprobado su conservación al refrescar. Al importar de nuevo el archivo, he abierto la misma incidencia sin añadir otra. |
+
+Antes de completar este recorrido he reproducido un problema de selección: el detalle solo ha respondido al pulsar el identificador del evento. He corregido el comportamiento para que toda la fila permita seleccionar. He publicado la corrección y he confirmado con la propietaria que pulsar el texto de DEMO-4625-1006 actualiza el detalle correspondiente.
+
+El 24 de noviembre he cerrado INC-000003 como Resuelta, con una resolución que identifica expresamente el ensayo como ficticio. Después he solicitado una copia nueva. La salida de systemd aportada por la propietaria muestra el inicio a las 15:19:47 y el mensaje de copia creada y verificada a las 15:19:49, seguido de una finalización correcta del servicio.
+
+La comprobación manual se ha confirmado mediante capturas del archivo exportado, resultados del panel y salida de la terminal de la propietaria. No he realizado una nueva lectura remota del contenido privado para redactar esta anotación. El resultado acredita el intercambio manual de los dos escenarios ficticios y el control de duplicados al refrescar; no acredita una captura o transferencia de eventos reales ni una restauración completa en otra Raspberry.
+
 ## Recorrido
 
 1. En una detección de la demo de Zaintza, pulsa **Revisar exportación ficticia** y comprueba los datos exactos.
